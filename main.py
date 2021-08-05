@@ -59,7 +59,8 @@ def parse_args():
                                                             "n, max_cost, max_rev, min_rev, save_path arguments")
     parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
     parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
-    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic", default=1)
+    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic",
+                        default=1)
 
     # genetic alg related arguments
     # -- generate dset case
