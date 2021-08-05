@@ -30,12 +30,7 @@ def check_args(a: argparse.ArgumentParser):
     pass
 
 
-def main_func(a):
-    """
-    main function that runs the solver
-    """
-    dset = load_dset(a.dset_path, a)
-    check_args(a)
+def get_solver(a):
     if a.algorithm == GREEDY:
         # TODO fill
         pass
@@ -45,6 +40,14 @@ def main_func(a):
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
         city_selection_func = getattr(partition, f"city_selection_{a.city_selection}")
+
+
+def main_func(a):
+    """
+    main function that runs the solver
+    """
+    dset = load_dset(a.dset_path, a)
+    check_args(a)
 
 
 def parse_args():

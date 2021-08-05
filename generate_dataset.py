@@ -35,6 +35,11 @@ def gen_dset(num_cities: int,
 
 
 def get_base_dir_and_name(save_path: str) -> (str, str):
+    """
+    TODO fill
+    :param save_path:
+    :return:
+    """
     path = save_path.split("/")
     base_dir, file_name = "", f"{path[-1]}"
     if file_name[-4:] != ".npy":
@@ -64,6 +69,9 @@ def gen_dset_and_save(num_cities: int,
                       min_rev: int,
                       max_rev: int,
                       save_path: str):
+    """
+    generated dataset and save to given path
+    """
     dset = gen_dset(num_cities, max_cost, min_rev, max_rev)
     base_dir, file_name = get_base_dir_and_name(save_path)
     np.save("/".join([base_dir, file_name]), dset)
