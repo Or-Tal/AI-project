@@ -97,7 +97,7 @@ class GeneticSolver(Solver):
         Solves the tour planning using a genetic algorithm
         :return: 1d-array of the best solution found by the algorithm
         """
-        best_solution = None
+        best_solution, best_score = None, 0
         step = 1
         population = self.__initial_population
         population_size = len(population)
@@ -124,10 +124,10 @@ class GeneticSolver(Solver):
 
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
-            best_solution = self.__get_best_solution(new_population, scores, step)
+            best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
 
-        return best_solution
+        return best_solution, best_score
 
     def __get_scores(self, population):
         """
@@ -199,5 +199,6 @@ class GeneticSolver(Solver):
                  else None
         """
         if step > self.__steps_threshold or np.max(scores) >= self.__score_threshold:
-            return population[np.argmax(scores)]
+            return population[np.argmax(scores)], np.max(scores)
+        return None, 0
 
