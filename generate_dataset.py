@@ -31,7 +31,7 @@ def gen_dset(num_cities: int,
              max_rev: int) -> Dict[str]:
     costs = randomize_cost(num_cities, max_cost)
     revenues = {i: np.random.randint(min_rev, max_rev) for i in range(num_cities)}
-    return {CITIES: revenues.keys(), COSTS: costs, REV: revenues}
+    return {CITIES: num_cities, COSTS: costs, REV: revenues}
 
 
 def get_base_dir_and_name(save_path: str) -> (str, str):
