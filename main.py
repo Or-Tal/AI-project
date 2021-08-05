@@ -5,6 +5,9 @@ import city_selection
 import partition
 from constants import *
 from generate_dataset import main_gen_func
+from greedy_algorithm import Greedy
+from optimal_algorithm import Optimal
+from genetic_solver import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -30,16 +33,30 @@ def check_args(a: argparse.ArgumentParser):
     pass
 
 
-def get_solver(a):
+def get_solver(a, dset):
     if a.algorithm == GREEDY:
-        # TODO fill
-        pass
+        return Greedy(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     elif a.algorithm == OPT:
-        # TODO fill
-        pass
+        return Optimal(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
-        city_selection_func = getattr(partition, f"city_selection_{a.city_selection}")
+        city_selection_func = getattr(city_selection, f"city_selection_{a.city_selection}")
+        return GeneticSolver(dset[CITIES],
+                             a.population_size,
+                             a.tour_length,
+                             partition_func,
+                             city_selection_func,
+                             a.score_th,
+                             a.step_th,
+                             a.p_mutation,
+                             dset[COSTS],
+                             dset[REV])
+
+
+def save_results(sol, scores, a):
+    if not os.path.exists("./results"):
+        os.mkdir("./results")
+    np.save(f"./results/{a.save_name}")
 
 
 def main_func(a):
@@ -48,6 +65,9 @@ def main_func(a):
     """
     dset = load_dset(a.dset_path, a)
     check_args(a)
+    solver = get_solver(a, dset)
+    sol, scores = solver.solve()
+    save_results(sol, scores, a)
 
 
 def parse_args():
@@ -59,7 +79,10 @@ def parse_args():
                                                             "n, max_cost, max_rev, min_rev, save_path arguments")
     parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
     parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
-    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic", default=1)
+    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic",
+                        default=1)
+    parser.add_argument("--save_name", required=True, help="name of the results file to be saved",
+                        default=1)
 
     # genetic alg related arguments
     # -- generate dset case
@@ -81,6 +104,7 @@ def parse_args():
     parser.add_argument("--score_th", default=np.inf, help="threshold for max score", required=False)
     parser.add_argument("--population_size", default=100, help="population size", required=False)
     parser.add_argument("--tour_length", default=30, help="number of tour days", required=False)
+
 
     ret = parser.parse_args()
     return ret
