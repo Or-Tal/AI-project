@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import os
 from constants import *
-from itertools import permutations
+from itertools import combinations_with_replacement
 from typing import Dict
 
 
@@ -14,12 +14,15 @@ def randomize_cost(num_cities: int, max_cost: int) -> Dict[(int, int)]:
     :param max_cost: maximal cost for single transition
     :return: a dictionary of (city_A, city_B) -> cost of going from A to B
     """
-    cities = np.array(permutations(np.arange(num_cities), 2))
+    cities = np.array(combinations_with_replacement(np.arange(num_cities), 2))
 
     def get_cost(x, y):
         return 0 if x == y else np.random.randint(max(1, max_cost // 10), max_cost)
 
-    return {cities[i]: x for i, x in enumerate(map(get_cost, cities))}
+    ret = {cities[i]: x for i, x in enumerate(map(get_cost, cities))}
+    for i in range(num_cities):
+        ret[(-1, i)] = np.random.randint(max(1, max_cost // 10), max_cost)
+    return ret
 
 
 def gen_dset(num_cities: int,
