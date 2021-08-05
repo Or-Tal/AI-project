@@ -68,7 +68,15 @@ def gen_dset_and_save(num_cities: int,
     return dset
 
 
-def main_func():
+def main_gen_func(a):
+
+    if a.save_path is None:
+        return gen_dset(a.n, a.max_cost, a.min_cost, a.max_cost)
+
+    return gen_dset_and_save(a.n, a.max_cost, a.min_cost, a.max_cost, a.save_path)
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--n", default=100, help="num_of_cities", required=False)
@@ -78,12 +86,4 @@ def main_func():
     parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy", required=False)
 
     args = parser.parse_args()
-
-    if args.save_path is None:
-        return gen_dset(args.n, args.max_cost, args.min_cost, args.max_cost)
-
-    return gen_dset_and_save(args.n, args.max_cost, args.min_cost, args.max_cost, args.save_path)
-
-
-if __name__ == "__main__":
-    main_func()
+    main_gen_func(args)

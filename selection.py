@@ -2,7 +2,7 @@ import numpy as np
 from scipy.special import softmax
 
 
-def selection_func_1(population, fitness_func):
+def selection_func(population, fitness_func):
     """
     Computes probabilities for each solution in population according to its score
     :param population: 2d-array of solutions
@@ -13,7 +13,7 @@ def selection_func_1(population, fitness_func):
     return softmax(scores)
 
 
-def random_select_1(population, weights):
+def random_select(population, weights):
     """
     Chooses randomly a pair of solutions from populations according to weights
     :param population: 2d-array of solutions
