@@ -14,21 +14,23 @@ def randomize_cost(num_cities: int, max_cost: int) -> Dict[(int, int)]:
     :param max_cost: maximal cost for single transition
     :return: a dictionary of (city_A, city_B) -> cost of going from A to B
     """
-    cities = np.array(combinations_with_replacement(np.arange(num_cities), 2))
+    cities = [x for x in combinations_with_replacement(np.arange(num_cities), 2)]
 
-    def get_cost(x, y):
+    def get_cost(xy):
+        x, y = xy
         return 0 if x == y else np.random.randint(max(1, max_cost // 10), max_cost)
 
     ret = {cities[i]: x for i, x in enumerate(map(get_cost, cities))}
     for i in range(num_cities):
         ret[(-1, i)] = np.random.randint(max(1, max_cost // 10), max_cost)
+
     return ret
 
 
 def gen_dset(num_cities: int,
              max_cost: int,
              min_rev: int,
-             max_rev: int) -> Dict[str]:
+             max_rev: int):
     costs = randomize_cost(num_cities, max_cost)
     revenues = {i: np.random.randint(min_rev, max_rev) for i in range(num_cities)}
     return {CITIES: num_cities, COSTS: costs, REV: revenues}
@@ -52,7 +54,7 @@ def get_base_dir_and_name(save_path: str) -> (str, str):
                 raise ValueError("invalid path was given")
             else:
                 os.mkdir("/".join(path[:-1]))
-                base_dir = "/".join(path[:-1])
+        base_dir = "/".join(path[:-1])
 
     elif len(path) > 1 and not os.path.exists("/".join(path[:-1])):
         os.mkdir("/".join(path[:-1]))
@@ -82,9 +84,10 @@ def gen_dset_and_save(num_cities: int,
 def main_gen_func(a):
 
     if a.save_path is None:
-        return gen_dset(a.n, a.max_cost, a.min_cost, a.max_cost)
+        return gen_dset(int(a.n), int(a.max_cost), int(a.min_rev), int(a.max_rev))
 
-    return gen_dset_and_save(a.n, a.max_cost, a.min_cost, a.max_cost, a.save_path)
+    return gen_dset_and_save(int(a.n), int(a.max_cost), int(a.min_rev),
+                             int(a.max_rev), a.save_path)
 
 
 if __name__ == "__main__":
@@ -94,7 +97,8 @@ if __name__ == "__main__":
     parser.add_argument("--max_cost", default=100, help="max cost for each transition", required=False)
     parser.add_argument("--max_rev", default=300, help="max cost for each transition", required=False)
     parser.add_argument("--min_rev", default=50, help="max cost for each transition", required=False)
-    parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy", required=False)
+    # parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy", required=False)
+    parser.add_argument("--save_path", default="./datasets/a.npy", help="path_to_save_dir/filename.npy", required=False)
 
     args = parser.parse_args()
     main_gen_func(args)
