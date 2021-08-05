@@ -8,11 +8,11 @@ class Greedy(Solver):
     """
     baseline greedy solver
     """
-    def __init__(self, cities: List[int],
+    def __init__(self, n_cities: int,
                  costs: Dict[(int, int)],
                  revenues: Dict[int],
                  tour_length: int):
-        self.cities = set(cities)
+        self.cities = set(range(n_cities))
         self.costs = costs
         self.rev = revenues
         self.n = tour_length
