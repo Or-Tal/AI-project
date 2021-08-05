@@ -67,7 +67,8 @@ def gen_dset_and_save(num_cities: int,
 
     return dset
 
-def main():
+
+def main_func():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--n", default=100, help="num_of_cities", required=False)
@@ -83,5 +84,6 @@ def main():
 
     return gen_dset_and_save(args.n, args.max_cost, args.min_cost, args.max_cost, args.save_path)
 
+
 if __name__ == "__main__":
-    main()
+    main_func()
