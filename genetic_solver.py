@@ -25,6 +25,19 @@ class GeneticSolver(Solver):
                  mutate_p,
                  transfer_costs,
                  city_revs):
+        """
+        Initializer for the genetic solver
+        :param num_cities: number of possible cities for performing
+        :param population_size: number of solutions to hold at a time
+        :param tour_length: length of the tour
+        :param partition_func: function for partitioning solutions in the crossover phase
+        :param city_selection_func: function for selecting a city for injecting to a mutation
+        :param score_threshold: threshold which above it a solution is considered as 'good enough'
+        :param steps_threshold: max number of iterations for the algorithm
+        :param mutate_p: probability for mutation generation
+        :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
+        :param city_revs: python dictionary - {city : revenue}
+        """
 
         Solver.__init__(self)
         self.__num_cities = num_cities
@@ -166,7 +179,7 @@ class GeneticSolver(Solver):
         :param population: 2d-array of solutions
         :return: 2d-array of the new, mutated solutions
         """
-        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[0.5, 0.5])
+        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[self.__mutate_p, 1 - self.__mutate_p])
         indices = np.argwhere(idx_to_be_mutated)
         genes_to_be_mutated = population[indices]
         for i in range(len(genes_to_be_mutated)):
@@ -176,17 +189,6 @@ class GeneticSolver(Solver):
             gen[mutation_idx] = mutation_city
             population[indices[i][0]] = gen
         return population
-
-    def __city_selection_func1(self, population):
-        """
-        Selects a city for mutation
-        :param population: 2d-array of solutions
-        :return: index of the city to be inserted to the mutation
-        """
-        cities_counter = np.bincount(population.flatten(), minlength=self.__num_cities)
-        p = softmax(1 - (cities_counter / population.size))
-        chosen_city = np.random.choice(cities_counter, size=1, p=p)[0]
-        return chosen_city
 
     def __get_best_solution(self, population, scores, step):
         """
