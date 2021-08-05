@@ -5,6 +5,9 @@ import city_selection
 import partition
 from constants import *
 from generate_dataset import main_gen_func
+from greedy_algorithm import Greedy
+from optimal_algorithm import Optimal
+from genetic_solver import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -32,8 +35,7 @@ def check_args(a: argparse.ArgumentParser):
 
 def get_solver(a):
     if a.algorithm == GREEDY:
-        # TODO fill
-        pass
+        return Greedy()
     elif a.algorithm == OPT:
         # TODO fill
         pass
