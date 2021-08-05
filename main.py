@@ -1,27 +1,71 @@
 import numpy as np
 import argparse
 import os
+import city_selection
+import partition
 from constants import *
+from generate_dataset import main_gen_func
 
 
-def load_dset(dset_path):
-    if len(dset_path) < 4 or dset_path[-4:] != ".npy" or not \
+def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
+    """
+    loads dataset from dset_path
+    :return: dictionary describing the dataset
+    """
+    if dset_path is None:
+        return main_gen_func(a)
+    elif len(dset_path) < 4 or dset_path[-4:] != ".npy" or not \
             os.path.exists(dset_path):
         raise ValueError("invalid dset path was given")
     return np.load(dset_path, allow_pickle=True).tolist()
 
 
-def main_func():
+def check_args(a: argparse.ArgumentParser):
+    """
+    validated arguments, throws ValueError in case of invalid arguments
+    :param a:
+    :return:
+    """
+    # TODO fill
     pass
+
+
+def main_func(a):
+    """
+    main function that runs the solver
+    """
+    dset = load_dset(a.dset_path, a)
+    check_args(a)
+    if a.algorithm == GREEDY:
+        # TODO fill
+        pass
+    elif a.algorithm == OPT:
+        # TODO fill
+        pass
+    else:
+        partition_func = getattr(partition, f"partition_{a.partition}")
+        city_selection_func = getattr(partition, f"city_selection_{a.city_selection}")
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dset_path", required=True, help="path/to/dataset.npy")
-    parser.add_argument("--model_type", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
-    parser.add_argument("--selection_func", required=False, help="path/to/dataset.npy", default=1)
-    parser.add_argument("--selection_func", required=False, help="path/to/dataset.npy", default=1)
+    parser.add_argument("--dset_path", required=False, help="path/to/dataset.npy\nif you wish to regenerate a dataset"
+                                                            " and run using the generated don't pass anything.\n see "
+                                                            "n, max_cost, max_rev, min_rev, save_path arguments")
+    parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
+    parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
+    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic", default=1)
+
+    parser.add_argument("--n", default=100, help="num_of_cities - generate dset case", required=False)
+    parser.add_argument("--max_cost", default=100, help="max cost for each transition - generate dset case", required=False)
+    parser.add_argument("--max_rev", default=300, help="max cost for each transition - generate dset case", required=False)
+    parser.add_argument("--min_rev", default=50, help="max cost for each transition - generate dset case", required=False)
+    parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy - generate dset case, if you "
+                                                          "don't wish to save the dataset, don't specify this", required=False)
+    ret = parser.parse_args()
+    return ret
 
 
 if __name__ == "__main__":
     args = parse_args()
+    main_func(args)
