@@ -23,4 +23,3 @@ def random_select(population, weights):
     indices = np.arange(len(population))
     chosen = np.random.choice(indices, size=2, p=weights)
     return population[chosen]
-
