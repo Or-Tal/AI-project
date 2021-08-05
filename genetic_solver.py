@@ -25,6 +25,19 @@ class GeneticSolver(Solver):
                  mutate_p,
                  transfer_costs,
                  city_revs):
+        """
+        Initializer for the genetic solver
+        :param num_cities: number of possible cities for performing
+        :param population_size: number of solutions to hold at a time
+        :param tour_length: length of the tour
+        :param partition_func: function for partitioning solutions in the crossover phase
+        :param city_selection_func: function for selecting a city for injecting to a mutation
+        :param score_threshold: threshold which above it a solution is considered as 'good enough'
+        :param steps_threshold: max number of iterations for the algorithm
+        :param mutate_p: probability for mutation generation
+        :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
+        :param city_revs: python dictionary - {city : revenue}
+        """
 
         Solver.__init__(self)
         self.__num_cities = num_cities
@@ -84,7 +97,7 @@ class GeneticSolver(Solver):
         Solves the tour planning using a genetic algorithm
         :return: 1d-array of the best solution found by the algorithm
         """
-        best_solution = None
+        best_solution, best_score = None, 0
         step = 1
         population = self.__initial_population
         population_size = len(population)
@@ -111,10 +124,10 @@ class GeneticSolver(Solver):
 
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
-            best_solution = self.__get_best_solution(new_population, scores, step)
+            best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
 
-        return best_solution
+        return best_solution, best_score
 
     def __get_scores(self, population):
         """
@@ -166,7 +179,7 @@ class GeneticSolver(Solver):
         :param population: 2d-array of solutions
         :return: 2d-array of the new, mutated solutions
         """
-        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[0.5, 0.5])
+        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[self.__mutate_p, 1 - self.__mutate_p])
         indices = np.argwhere(idx_to_be_mutated)
         genes_to_be_mutated = population[indices]
         for i in range(len(genes_to_be_mutated)):
@@ -177,17 +190,6 @@ class GeneticSolver(Solver):
             population[indices[i][0]] = gen
         return population
 
-    def __city_selection_func1(self, population):
-        """
-        Selects a city for mutation
-        :param population: 2d-array of solutions
-        :return: index of the city to be inserted to the mutation
-        """
-        cities_counter = np.bincount(population.flatten(), minlength=self.__num_cities)
-        p = softmax(1 - (cities_counter / population.size))
-        chosen_city = np.random.choice(cities_counter, size=1, p=p)[0]
-        return chosen_city
-
     def __get_best_solution(self, population, scores, step):
         """
         :param population: 2d-array of solutions
@@ -197,5 +199,6 @@ class GeneticSolver(Solver):
                  else None
         """
         if step > self.__steps_threshold or np.max(scores) >= self.__score_threshold:
-            return population[np.argmax(scores)]
+            return population[np.argmax(scores)], np.max(scores)
+        return None, 0
 
