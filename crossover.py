@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def continuous_partition(n):
+def crossover_1(n):
     """
     Randomizes a continuous partition between 2 genetic solutions
     :param n: length of a solution
@@ -13,7 +13,7 @@ def continuous_partition(n):
     return indices
 
 
-def non_continuous_partition(n):
+def crossover_2(n):
     """
     Randomizes a non-continuous partition between 2 genetic solutions
     :param n: length of a solution
