@@ -69,7 +69,7 @@ class SolverControls(wx.Panel):
     def _init_ui(self):
         """Builds GUI.
         """
-
+        # fixme main box sections
         # Static boxes
         sizer = wx.BoxSizer(wx.VERTICAL)
         # Solver box
@@ -101,7 +101,7 @@ class SolverControls(wx.Panel):
         delay_label = wx.StaticText(solver_box, label='Delay [ms]')
         solver_sizer.Add(delay_label, (2, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-        self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
+        self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=300,
                                style=wx.SL_LABELS)
         solver_sizer.Add(self.delay, (3, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
