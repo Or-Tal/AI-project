@@ -60,7 +60,7 @@ if __name__ == '__main__':
                         "100_cities.npy"]
     partitions = [1, 2]
     city_selections = [1]
-    p_mutations = [0.001, 0.01, 0.1, 0.2, 0.5, 0.7, 1]
+    p_mutations = [0.001, 0.01, 0.1, 0.2]
     small_steps_thresholds = [10, 20, 30]
     large_steps_thresholds = [50, 100, 300, 500, 1000]
     score_thresholds = [np.inf]
@@ -69,9 +69,13 @@ if __name__ == '__main__':
     large_tour_lengths = [5, 10, 25, 40]
     large_elitism_factors = [2, 6, 10, 30]
 
+    # run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, small_steps_thresholds,
+    #                 score_thresholds, small_population_sizes, ["genetic", "optimal", "greedy"])
     run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, small_steps_thresholds,
-                    score_thresholds, small_population_sizes, ["genetic", "optimal", "greedy"])
+                    score_thresholds, small_population_sizes, ["optimal", "greedy"])
 
+    # run_hyperparams(large_dset_paths, partitions, city_selections, p_mutations, large_steps_thresholds,
+    #                 score_thresholds, large_population_sizes, ["genetic", "greedy"], large_tour_lengths)
     run_hyperparams(large_dset_paths, partitions, city_selections, p_mutations, large_steps_thresholds,
-                    score_thresholds, large_population_sizes, ["genetic", "greedy"], large_tour_lengths)
+                    score_thresholds, large_population_sizes, ["greedy"], large_tour_lengths)
 
