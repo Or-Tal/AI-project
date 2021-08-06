@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List, Dict
-from solver import Solver
+from solver_old import Solver
 from itertools import permutations
 
 
@@ -9,11 +9,11 @@ class Optimal(Solver):
     baseline greedy solver
     """
     def __init__(self,
-                 cities,
+                 n_cities,
                  costs,
                  revenues,
                  tour_length):
-        self.cities = set(cities)
+        self.cities = set(range(n_cities))
         self.costs = costs
         self.rev = revenues
         self.n = tour_length

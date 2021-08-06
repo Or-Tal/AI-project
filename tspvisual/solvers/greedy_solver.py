@@ -42,5 +42,3 @@ class Greedy(Solver):
 
         # return greedy solution
         return sol
-
-
