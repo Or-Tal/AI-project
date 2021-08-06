@@ -1,6 +1,6 @@
 import unittest
 
-from noa_kirel.tsp import TSP, Path
+from tsp import TSP, Path
 
 
 class TestTSP(unittest.TestCase):

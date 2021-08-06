@@ -10,16 +10,6 @@ class Solver(abc.ABC):
     def __init__(self):
         self._start_time = 0
 
-    @property
-    @abc.abstractmethod
-    def name(self):
-        """Returns name of the solver.
-        :return: Name.
-        :rtype: string
-        """
-
-        raise NotImplementedError('Solvers must have name property.')
-
     @abc.abstractmethod
     def solve(self, ret_generator=True):
         """

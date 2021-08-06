@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from solvers import GASolver
-from noa_kirel.tsp import TSP, Path
+from tsp import TSP, Path
 
 
 class TestGASolver(TestCase):

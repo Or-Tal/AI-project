@@ -2,8 +2,8 @@ import unittest
 from copy import deepcopy
 from unittest.mock import patch
 
-from noa_kirel.tsp import TSP, Neighbourhood, Path
-from noa_kirel.tsplib import TSPLib, TSPLibTour
+from tsp import TSP, Neighbourhood, Path
+from tsplib import TSPLib, TSPLibTour
 
 
 class TestPath(unittest.TestCase):

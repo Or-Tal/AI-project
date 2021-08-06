@@ -41,9 +41,6 @@ class BruteForceSolver(Solver):
             scores.append(best_score)
         return best_sol, best_score if ret_generator else scores
 
-    @name.setter
-    def name(self, value):
-        self._name = value
 
 
 

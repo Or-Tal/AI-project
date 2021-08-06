@@ -202,7 +202,3 @@ class GeneticSolver(Solver):
         if step > self.__steps_threshold or best_score >= self.__score_threshold:
             best_solution = population[np.argmax(scores)]
         return best_solution, best_score
-
-    @name.setter
-    def name(self, value):
-        self._name = value
