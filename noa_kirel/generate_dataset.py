@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 import os
-from constants import *
+from noa_kirel.constants import *
 from itertools import product
 from typing import Dict
 
