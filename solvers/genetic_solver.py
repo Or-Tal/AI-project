@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.special import softmax
-from noa_kirel.solver import Solver
+from solver import Solver
 
 INITIAL_CITY = -1
 
