@@ -4,20 +4,14 @@ import wx
 import wx.propgrid as wxpg
 from pubsub import pub
 
-from gui.helpers import borders
-from gui.solver_runner import SolverRunner
-from solver import Solver
-from solvers import greedy_solver, brute_force_solver, genetic_solver
-from constants import *
-from partition import partition_1
-from city_selection import city_selection_1
+from noa_kirel.gui.helpers import borders
+from noa_kirel.gui.solver_runner import SolverRunner
+from noa_kirel.solver import Solver
+from noa_kirel.solvers import greedy_solver, brute_force_solver, genetic_solver
+from noa_kirel.constants import *
+from noa_kirel.partition import partition_1
+from noa_kirel.city_selection import city_selection_1
 import os
-
-#from solvers import *  # noqa: F403, F401
-# Weird solution for importing solvers when frozen with PyInstaller
-
-
-
 
 
 class SolverView(wx.Panel):

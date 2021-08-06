@@ -1,14 +1,14 @@
 import argparse
 import os
-import city_selection
-import partition
+from noa_kirel import city_selection
+from noa_kirel import partition
 import pandas as pd
 import matplotlib.pyplot as plt
-from constants import *
-from generate_dataset import main_gen_func
-from solvers.greedy_solver import GreedySolver
-from solvers.brute_force_solver import BruteForceSolver
-from solvers.genetic_solver import GeneticSolver
+from noa_kirel.constants import *
+from noa_kirel.generate_dataset import main_gen_func
+from noa_kirel.solvers.greedy_solver import GreedySolver
+from noa_kirel.solvers.brute_force_solver import BruteForceSolver
+from noa_kirel.solvers.genetic_solver import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:

@@ -1,5 +1,5 @@
 import numpy as np
-from solver import Solver
+from noa_kirel.solver import Solver
 from copy import deepcopy
 
 
@@ -18,6 +18,16 @@ class GreedySolver(Solver):
         self.rev = revenues
         self.n = int(tour_length)
         self.name = "greedy"
+
+    def score(self, sol):
+        res = 0
+        prev = -1
+        for x in sol:
+            res += self.rev[x] - self.costs[(prev, x)]
+            prev = x
+        return res
+
+
 
     def solve(self, ret_generator=True):
         sol = list()
@@ -41,7 +51,7 @@ class GreedySolver(Solver):
             # adds best candidate to solution
             sol.append(best_candidate)
             opts = opts - {best_candidate}
-            scores.append(scores[-1] + best_score)
+            scores.append(self.score(sol))
 
             # generator case
             if ret_generator:
