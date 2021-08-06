@@ -50,6 +50,3 @@ class GreedySolver(Solver):
         # return greedy solution
         return sol, scores[-1] if ret_generator else scores[1:]
 
-    @name.setter
-    def name(self, value):
-        self._name = value

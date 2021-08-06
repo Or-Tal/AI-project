@@ -8,8 +8,17 @@ from pubsub import pub
 from gui.helpers import borders
 from gui.solver_runner import SolverRunner
 from solver import Solver
+from solvers import greedy_solver, brute_force_solver, genetic_solver
+from constants import *
+from partition import partition_1
+from city_selection import city_selection_1
+import os
+
 #from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
+
+
+
 
 
 class SolverView(wx.Panel):
@@ -47,20 +56,42 @@ class SolverControls(wx.Panel):
     SOLVE_BTN_INACTIVE = 'Solve'
     SOLVE_BTN_ACTIVE = 'Stop'
 
+    def get_solver(self, solver_name, dset: dict, params: dict):
+        if solver_name == GEN:
+            return self.solvers[solver_name](dset[CITIES],
+                                             params[POP_SIZE],
+                                             params[TOUR_LEN],
+                                             partition_1,
+                                             city_selection_1,
+                                             np.inf,
+                                             params[STEPS],
+                                             params[MUT_RATE],
+                                             params[NUM_ELITE],
+                                             dset[COSTS], dset[REV])
+        return self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
+
     def __init__(self, parent):
         super(SolverControls, self).__init__(parent)
 
         # List of all available solvers
-        self.solvers = {s.name: s for s in Solver.__subclasses__()}
+        # self.solvers = {s.name: s for s in Solver.__subclasses__()}
+        self.solvers = {GREEDY: greedy_solver.GreedySolver, GEN: genetic_solver.GeneticSolver,
+                        BF_SOL: brute_force_solver.BruteForceSolver}
+        self.cur_solver = BF_SOL
         self.solver_names = sorted(list(self.solvers.keys()))
 
         # List of all number of cities
         self.cities = {}
-        self.num_of_cities = sorted(["1", "2", "3"])
+        self.num_of_cities = sorted(["3", "6", "9"])
 
         # Currently selected solver and tsp
-        self.solver = None
+        cwd = os.getcwd()
+        self.dset = load_dset("./datasets/3_cities.npy")
 
+        self.params = {BF_SOL: {TOUR_LEN: 3},
+                       GREEDY: {TOUR_LEN: 3},
+                       GEN: {POP_SIZE: 5, TOUR_LEN: 3, STEPS: 20, MUT_RATE: 0.01, NUM_ELITE: 1}}
+        self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
         self.tsp = None
 
         # Current `SolverRunner`
@@ -202,8 +233,8 @@ class SolverControls(wx.Panel):
         self.SetSizer(sizer)
 
         # Event bindings
-        self.solver_select.Bind(wx.EVT_CHOICE, self._on_select_delay)
         self.cities_select.Bind(wx.EVT_CHOICE, self._on_select_number_cities)
+        self.solver_select.Bind(wx.EVT_CHOICE, self._on_select_solver)
         self.solve_button.Bind(wx.EVT_BUTTON, self._on_solve)
         self.reset_button.Bind(wx.EVT_BUTTON, self._on_reset)
         self.delay.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
@@ -220,26 +251,23 @@ class SolverControls(wx.Panel):
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
 
         # Run solver selection event handler to create default solver
-        self._on_select_delay(None)
+        self._on_select_solver(None)
 
-    def _on_select_delay(self, event):
+    def _on_select_solver(self, event):
         """Handles selecting solver from solvers combobox.
         """
-
         solver_name = self.solver_names[self.solver_select.GetSelection()]
-        solver_class = self.solvers[solver_name]
-        solver = solver_class()
-
-        pub.sendMessage('SOLVER_CHANGE', solver=solver)
+        self.solver = self.get_solver(solver_name, self.dset, self.params[solver_name])
+        self.cur_solver = solver_name
+        pub.sendMessage('SOLVER_CHANGE', solver=solver_name)
 
     # Lilach added
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
-        # todo: change it !!!!!
-        print("")
-
-        pub.sendMessage('NUM_OF_CITIES_CHANGE')
+        self.dset = load_dset(f"./datasets/{event.String}_cities.npy")
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[self.cur_solver])
+        pub.sendMessage('NUM_OF_CITIES_CHANGE', num_of_cities=self.dset[CITIES])
 
     def _on_solve(self, event):
         """Handles clicking 'solve' button - runs `SolverRunner` with currently
@@ -628,32 +656,32 @@ class SolverProperties(wx.propgrid.PropertyGrid):
         # Reset the properties
         self.reset()
 
-        # Skip if there is no solver or solver has no properties
-        if not self.solver or not self.solver.properties:
-            return
+        # # Skip if there is no solver or solver has no properties
+        # if not self.solver or not self.solver.properties:
+        #     return
 
-        # For each property
-        for i, p in enumerate(self.solver.properties):
-            # Create property object with appropriate type
-            if p.type is int:
-                prop = wxpg.IntProperty()
-            elif p.type is float:
-                prop = wxpg.FloatProperty()
-            elif issubclass(p.type, Enum):
-                prop = wxpg.EnumProperty()
-                labels = list(map(lambda c: c.name, p.type))
-                values = list(map(lambda c: c.value, p.type))
-                prop_choices = wxpg.PGChoices(labels=labels, values=values)
-                prop.SetChoices(prop_choices)
-
-            # Set label and value
-            prop.SetLabel(p.name)
-            prop.SetValue(p.default)
-            prop.SetDefaultValue(p.default)
-            prop.SetAttribute('property_idx', i)
-
-            # And append the property object
-            self.Append(prop)
+        # # For each property
+        # for i, p in enumerate(self.solver.properties):
+        #     # Create property object with appropriate type
+        #     if p.type is int:
+        #         prop = wxpg.IntProperty()
+        #     elif p.type is float:
+        #         prop = wxpg.FloatProperty()
+        #     elif issubclass(p.type, Enum):
+        #         prop = wxpg.EnumProperty()
+        #         labels = list(map(lambda c: c.name, p.type))
+        #         values = list(map(lambda c: c.value, p.type))
+        #         prop_choices = wxpg.PGChoices(labels=labels, values=values)
+        #         prop.SetChoices(prop_choices)
+        #
+        #     # Set label and value
+        #     prop.SetLabel(p.name)
+        #     prop.SetValue(p.default)
+        #     prop.SetDefaultValue(p.default)
+        #     prop.SetAttribute('property_idx', i)
+        #
+        #     # And append the property object
+        #     self.Append(prop)
 
         # Fit columns and layout the parent
         self.FitColumns()
