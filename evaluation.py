@@ -61,17 +61,16 @@ if __name__ == '__main__':
     partitions = [1, 2]
     city_selections = [1]
     p_mutations = [0.001, 0.01, 0.1, 0.2]
-    small_steps_thresholds = [10, 20, 30]
-    large_steps_thresholds = [50, 100, 300, 500, 1000]
+    steps_thresholds = [500, 2000]
     score_thresholds = [np.inf]
     small_population_sizes = [7, 10, 20, 50]
     large_population_sizes = [10, 30, 50, 100]
-    large_tour_lengths = [5, 10, 25, 40]
+    large_tour_lengths = [10, 25, 40]
     large_elitism_factors = [2, 6, 10, 30]
 
-    run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, small_steps_thresholds,
+    run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, steps_thresholds,
                     score_thresholds, small_population_sizes, ["genetic"])
 
-    run_hyperparams(large_dset_paths, partitions, city_selections, p_mutations, large_steps_thresholds,
+    run_hyperparams(large_dset_paths, partitions, city_selections, p_mutations, steps_thresholds,
                     score_thresholds, large_population_sizes, ["genetic"], large_tour_lengths)
 
