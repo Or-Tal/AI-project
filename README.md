@@ -2,7 +2,7 @@
 
 ![Build status](https://travis-ci.org/bcyran/tsp-visual.svg?branch=master)
 
-![Screenshot of TSP Visual](screenshot.png)
+![Screenshot of TSP Visual](noa_kirel/screenshot.png)
 
 ## About
 TSP Visual is a program visualising the process of solving the travelling
