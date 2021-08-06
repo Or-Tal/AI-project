@@ -100,25 +100,31 @@ class GeneticSolver(Solver):
         population = self.__initial_population
         scores = self.__get_scores(population)
         elitism_factor = self.__elitism_factor if (self.__elitism_factor + self.__population_size) % 2 == 0 \
-            else self.__elitism_factor - 1
+            else self.__elitism_factor + 1
+
+        num_cities = self.__num_cities
 
         while best_solution is None:
             weights = self.__selection_func(scores)  # weights is np.array
             indices = weights.argsort()[-elitism_factor:]
-            new_population = np.zeros((self.__population_size, self.__tour_length))
+            new_population = np.zeros((self.__population_size, self.__tour_length), dtype=int)
             new_population[-elitism_factor:] = population[indices]
 
             num_of_genes = self.__population_size - elitism_factor
             for i in range(num_of_genes // 2):
                 x, y = self.__random_select(population, weights)
                 x_new, y_new = self.__crossover(x, y)
+                print(x_new, y_new)
                 new_population[i * 2:i * 2 + 2] = [x_new, y_new]
 
+            print(new_population)
             new_population = self.__mutation(new_population)
+            print(new_population)
             scores = self.__get_scores(new_population)
             best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             best_scores.append(best_score)
             step += 1
+            population = new_population
 
         return best_solution, best_scores
 
@@ -176,7 +182,7 @@ class GeneticSolver(Solver):
         indices = np.argwhere(idx_to_be_mutated)
         genes_to_be_mutated = population[indices]
         for i in range(len(genes_to_be_mutated)):
-            mutation_idx = np.random.randint(len(genes_to_be_mutated[0]))
+            mutation_idx = np.random.randint(self.__tour_length)
             mutation_city = self.__city_selection_func(population, self.__num_cities)
             gen = genes_to_be_mutated[i]
             gen[mutation_idx] = mutation_city

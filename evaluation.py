@@ -30,19 +30,19 @@ def run_hyperparams(cur_dset_paths,
         num_cities = int(path.split(sep='_')[0])
         if not cur_tour_lengths:
             cur_tour_lengths = np.linspace(3, num_cities, num_cities // 3, dtype=int)
-        if not cur_elitism_factors:
-            cur_elitism_factors = [1, 3] if num_cities % 2 == 1 else [2]
 
-        for tour_length in cur_tour_lengths:
-            for elitism_factor in cur_elitism_factors:
-                for partition in cur_partitions:
-                    for city_selection in cur_city_selections:
-                        for p in cur_p_mutations:
-                            for steps_threshold in cur_steps_thresholds:
-                                for score_threshold in cur_score_thresholds:
-                                    for population_size in cur_population_sizes:
-                                        if population_size <= elitism_factor:
-                                            continue
+        for population_size in cur_population_sizes:
+            if not cur_elitism_factors:
+                cur_elitism_factors = [1, 3] if population_size % 2 == 1 else [2]
+            for tour_length in cur_tour_lengths:
+                for elitism_factor in cur_elitism_factors:
+                    if population_size <= elitism_factor:
+                        continue
+                    for partition in cur_partitions:
+                        for city_selection in cur_city_selections:
+                            for p in cur_p_mutations:
+                                for steps_threshold in cur_steps_thresholds:
+                                    for score_threshold in cur_score_thresholds:
                                         for algorithm in cur_algorithms:
                                             save_name = f"num_cities_{num_cities}_length_{tour_length}_partition_{1}" \
                                                         f"_city_selection_{city_selection}_p_{p}_" \
@@ -60,7 +60,7 @@ if __name__ == '__main__':
                         "100_cities.npy"]
     partitions = [1, 2]
     city_selections = [1]
-    p_mutations = [0.001, 0.01, 0.1, 0.2, 0.5, 0.7, 1]
+    p_mutations = [0.001, 0.01, 0.1, 0.2]
     small_steps_thresholds = [10, 20, 30]
     large_steps_thresholds = [50, 100, 300, 500, 1000]
     score_thresholds = [np.inf]
@@ -70,8 +70,8 @@ if __name__ == '__main__':
     large_elitism_factors = [2, 6, 10, 30]
 
     run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, small_steps_thresholds,
-                    score_thresholds, small_population_sizes, ["genetic", "optimal", "greedy"])
+                    score_thresholds, small_population_sizes, ["genetic"])
 
     run_hyperparams(large_dset_paths, partitions, city_selections, p_mutations, large_steps_thresholds,
-                    score_thresholds, large_population_sizes, ["genetic", "greedy"], large_tour_lengths)
+                    score_thresholds, large_population_sizes, ["genetic"], large_tour_lengths)
 
