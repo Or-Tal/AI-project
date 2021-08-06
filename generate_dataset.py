@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import os
 from constants import *
-from itertools import combinations_with_replacement
+from itertools import product
 from typing import Dict
 
 
@@ -14,7 +14,7 @@ def randomize_cost(num_cities: int, max_cost: int) -> Dict[(int, int)]:
     :param max_cost: maximal cost for single transition
     :return: a dictionary of (city_A, city_B) -> cost of going from A to B
     """
-    cities = [x for x in combinations_with_replacement(np.arange(num_cities), 2)]
+    cities = [x for x in product(np.arange(num_cities), repeat=2)]
 
     def get_cost(xy):
         x, y = xy

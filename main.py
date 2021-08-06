@@ -49,6 +49,7 @@ def get_solver(a, dset):
                              a.score_th,
                              a.step_th,
                              a.p_mutation,
+                             a.elitism_factor,
                              dset[COSTS],
                              dset[REV])
 
@@ -56,7 +57,8 @@ def get_solver(a, dset):
 def save_results(sol, scores, a):
     if not os.path.exists("./results"):
         os.mkdir("./results")
-    np.save(f"./results/{a.save_name}")
+
+    np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
 
 
 def main_func(a):
@@ -110,6 +112,6 @@ def parse_args():
     return ret
 
 
-if __name__ == "__main__":
-    args = parse_args()
-    main_func(args)
+# if __name__ == "__main__":
+#     args = parse_args()
+#     main_func(args)

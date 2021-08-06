@@ -2,10 +2,6 @@ import numpy as np
 from scipy.special import softmax
 from solver import Solver
 
-POPULATION_SIZE = 0
-PATH_SIZE = 0
-EVEN = 2
-ODD = 1
 INITIAL_CITY = -1
 
 
@@ -23,6 +19,7 @@ class GeneticSolver(Solver):
                  score_threshold,
                  steps_threshold,
                  mutate_p,
+                 elitism_factor,
                  transfer_costs,
                  city_revs):
         """
@@ -35,19 +32,23 @@ class GeneticSolver(Solver):
         :param score_threshold: threshold which above it a solution is considered as 'good enough'
         :param steps_threshold: max number of iterations for the algorithm
         :param mutate_p: probability for mutation generation
+        :param elitism_factor: number of gens to pass as is each iteration
         :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
         :param city_revs: python dictionary - {city : revenue}
         """
 
         Solver.__init__(self)
         self.__num_cities = num_cities
+        self.__population_size = population_size
+        self.__tour_length = tour_length
         self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs)
         self.__partition_func = partition_func
         self.__city_selection_func = city_selection_func
         self.__score_threshold = score_threshold
         self.__steps_threshold = steps_threshold
         self.__mutate_p = mutate_p
-        self.__initial_population = self.__get_init_population(num_cities, population_size, tour_length)
+        self.__elitism_factor = elitism_factor
+        self.__initial_population = self.__get_init_population()
 
     @staticmethod
     def __get_fitness_function(transfer_costs, city_rev):
@@ -57,6 +58,7 @@ class GeneticSolver(Solver):
         :param city_rev: python dictionary - {city : revenue}
         :return: a fitness function according to the revenue and cost function
         """
+
         def fitness_function(solution):
             """
             Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
@@ -64,7 +66,7 @@ class GeneticSolver(Solver):
             :param solution: ndarray representing the tour
             :return: total revenue from the solution tour
             """
-            if not solution:
+            if solution is None or solution.size == 0:
                 return 0
 
             visited = set()
@@ -81,16 +83,12 @@ class GeneticSolver(Solver):
 
         return fitness_function
 
-    @staticmethod
-    def __get_init_population(num_cities, population_size, tour_length):
+    def __get_init_population(self):
         """
         Randomize an initial population for the genetic algorithm
-        :param num_cities: int, number of cities
-        :param population_size: int, number of solutions to generate
-        :param tour_length: int, length of each solution
         :return: 2d-array of the generated solutions of shape (population_size, tour_length)
         """
-        return np.random.choice(np.arange(num_cities), size=(population_size, tour_length))
+        return np.random.choice(np.arange(self.__num_cities), size=(self.__population_size, self.__tour_length))
 
     def solve(self):
         """
@@ -100,27 +98,21 @@ class GeneticSolver(Solver):
         best_solution, best_scores = None, []
         step = 1
         population = self.__initial_population
-        population_size = len(population)
-        new_population = np.empty((population_size, PATH_SIZE))
         scores = self.__get_scores(population)
+        elitism_factor = self.__elitism_factor if (self.__elitism_factor + self.__population_size) % 2 == 0 \
+            else self.__elitism_factor - 1
 
         while best_solution is None:
             weights = self.__selection_func(scores)  # weights is np.array
+            indices = weights.argsort()[-elitism_factor:]
+            new_population = np.zeros((self.__population_size, self.__tour_length))
+            new_population[-elitism_factor:] = population[indices]
 
-            if population_size % 2 == 0:
-                indices = weights.argsort()[-2:]
-                new_population = \
-                    np.append(new_population, [population[weights[indices[0]]], population[weights[indices[1]]]], axis=0)
-                num_of_genes = len(population) - EVEN
-
-            else:
-                new_population = np.append(new_population, [population[np.argmax(weights)]], axis=0)
-                num_of_genes = len(population) - ODD
-
-            for gen in range(num_of_genes // 2):
+            num_of_genes = self.__population_size - elitism_factor
+            for i in range(num_of_genes // 2):
                 x, y = self.__random_select(population, weights)
                 x_new, y_new = self.__crossover(x, y)
-                new_population = np.append(new_population, [[x_new, y_new]], axis=0)
+                new_population[i * 2:i * 2 + 2] = [x_new, y_new]
 
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
@@ -135,7 +127,7 @@ class GeneticSolver(Solver):
         :param population: 2d-array of solutions
         :return: 1d-array of scores
         """
-        return [self.__fitness_func(solution) for solution in population]
+        return np.array([self.__fitness_func(solution) for solution in population])
 
     @staticmethod
     def __selection_func(scores):
@@ -144,7 +136,8 @@ class GeneticSolver(Solver):
         :param scores: 1d-array of scores
         :return: 1d-array of the probabilities for each solution in population
         """
-        return softmax(scores)
+        normalized_scores = scores / np.max(scores)
+        return softmax(normalized_scores)
 
     @staticmethod
     def __random_select(population, weights):
@@ -165,8 +158,7 @@ class GeneticSolver(Solver):
         :param y: 1d-array of a solution
         :return: two 1d-arrays of the new solutions
         """
-        partition = self.__partition_func(len(x))
-        opposite_partition = (partition + 1) % 2
+        partition, opposite_partition = self.__partition_func(len(x))
         new_x, new_y = np.zeros_like(x), np.zeros_like(y)
 
         new_x[partition], new_y[partition] = x[partition], y[partition]
@@ -180,7 +172,7 @@ class GeneticSolver(Solver):
         :param population: 2d-array of solutions
         :return: 2d-array of the new, mutated solutions
         """
-        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[self.__mutate_p, 1 - self.__mutate_p])
+        idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[1 - self.__mutate_p, self.__mutate_p])
         indices = np.argwhere(idx_to_be_mutated)
         genes_to_be_mutated = population[indices]
         for i in range(len(genes_to_be_mutated)):
@@ -203,4 +195,3 @@ class GeneticSolver(Solver):
         if step > self.__steps_threshold or best_score >= self.__score_threshold:
             best_solution = population[np.argmax(scores)]
         return best_solution, best_score
-
