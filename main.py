@@ -68,7 +68,8 @@ def main_func(a):
     dset = load_dset(a.dset_path, a)
     check_args(a)
     solver = get_solver(a, dset)
-    sol, scores = solver.solve(ret_generator=False)
+    ret = np.array([x for x in solver.solve()])
+    sol, scores = ret[:, 0][-1], ret[:, 1]
     save_results(sol, scores, a)
 
 

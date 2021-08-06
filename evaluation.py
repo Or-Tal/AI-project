@@ -58,7 +58,7 @@ if __name__ == '__main__':
     small_dset_paths = ["3_cities.npy", "6_cities.npy", "9_cities.npy", "12_cities.npy", "15_cities.npy"]
     large_dset_paths = ["50_cities.npy", "60_cities.npy", "70_cities.npy", "80_cities.npy", "90_cities.npy",
                         "100_cities.npy"]
-    partitions = [1, 2]
+    partitions = [1]
     city_selections = [1]
     p_mutations = [0.001, 0.01, 0.1, 0.2]
     steps_thresholds = [500, 2000]
