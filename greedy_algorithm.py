@@ -16,11 +16,12 @@ class Greedy(Solver):
         self.cities = set(range(n_cities))
         self.costs = costs
         self.rev = revenues
-        self.n = tour_length
+        self.n = int(tour_length)
 
     def solve(self):
         sol = list()
         opts = deepcopy(self.cities)
+        scores = [0]
 
         for i in range(self.n):
 
@@ -39,8 +40,9 @@ class Greedy(Solver):
             # adds best candidate to solution
             sol.append(best_candidate)
             opts = opts - {best_candidate}
+            scores.append(scores[-1] + best_score)
 
         # return greedy solution
-        return sol
+        return sol, scores[1:]
 
 

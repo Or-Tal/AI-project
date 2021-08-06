@@ -16,7 +16,7 @@ class Optimal(Solver):
         self.cities = set(range(n_cities))
         self.costs = costs
         self.rev = revenues
-        self.n = tour_length
+        self.n = int(tour_length)
 
     def score(self, sol: np.ndarray):
         """
@@ -32,13 +32,15 @@ class Optimal(Solver):
     def solve(self):
         best_score = np.NINF
         best_sol = None
+        scores = []
         for sol in permutations(self.cities, r=self.n):
-            sol = np.ndarray(sol)
+            sol = np.array(sol)
             tmp_score = self.score(sol)
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
-        return best_sol
+            scores.append(best_score)
+        return best_sol, scores
 
 
 
