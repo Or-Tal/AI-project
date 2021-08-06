@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.special import softmax
-from noa_kirel.solver import Solver
+from solver import Solver
 
 INITIAL_CITY = -1
 
@@ -49,6 +49,7 @@ class GeneticSolver(Solver):
         self.__mutate_p = mutate_p
         self.__elitism_factor = elitism_factor
         self.__initial_population = self.__get_init_population()
+        self.name = "genetic"
 
     @staticmethod
     def __get_fitness_function(transfer_costs, city_rev):

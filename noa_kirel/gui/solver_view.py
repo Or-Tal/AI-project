@@ -1,16 +1,23 @@
-from enum import Enum
 from operator import itemgetter
 
 import wx
 import wx.propgrid as wxpg
 from pubsub import pub
 
-from noa_kirel.gui.helpers import borders
-from noa_kirel.gui.solver_runner import SolverRunner
-from noa_kirel.solver import Solver
-from solvers import *  # noqa: F403, F401
+from gui.helpers import borders
+from gui.solver_runner import SolverRunner
+from solver import Solver
+from solvers import greedy_solver, brute_force_solver, genetic_solver
+from constants import *
+from partition import partition_1
+from city_selection import city_selection_1
+import os
+
+#from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
-from solvers import sa, ga  # noqa: F401
+
+
+
 
 
 class SolverView(wx.Panel):
@@ -48,15 +55,42 @@ class SolverControls(wx.Panel):
     SOLVE_BTN_INACTIVE = 'Solve'
     SOLVE_BTN_ACTIVE = 'Stop'
 
+    def get_solver(self, solver_name, dset: dict, params: dict):
+        if solver_name == GEN:
+            return self.solvers[solver_name](dset[CITIES],
+                                             params[POP_SIZE],
+                                             params[TOUR_LEN],
+                                             partition_1,
+                                             city_selection_1,
+                                             np.inf,
+                                             params[STEPS],
+                                             params[MUT_RATE],
+                                             params[NUM_ELITE],
+                                             dset[COSTS], dset[REV])
+        return self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
+
     def __init__(self, parent):
         super(SolverControls, self).__init__(parent)
 
         # List of all available solvers
-        self.solvers = {s.name: s for s in Solver.__subclasses__()}
+        # self.solvers = {s.name: s for s in Solver.__subclasses__()}
+        self.solvers = {GREEDY: greedy_solver.GreedySolver, GEN: genetic_solver.GeneticSolver,
+                        BF_SOL: brute_force_solver.BruteForceSolver}
+        self.cur_solver = BF_SOL
         self.solver_names = sorted(list(self.solvers.keys()))
 
+        # List of all number of cities
+        self.cities = {}
+        self.num_of_cities = sorted(["3", "6", "9"])
+
         # Currently selected solver and tsp
-        self.solver = None
+        cwd = os.getcwd()
+        self.dset = load_dset("./datasets/3_cities.npy")
+
+        self.params = {BF_SOL: {TOUR_LEN: 3},
+                       GREEDY: {TOUR_LEN: 3},
+                       GEN: {POP_SIZE: 5, TOUR_LEN: 3, STEPS: 20, MUT_RATE: 0.01, NUM_ELITE: 1}}
+        self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
         self.tsp = None
 
         # Current `SolverRunner`
@@ -83,7 +117,10 @@ class SolverControls(wx.Panel):
         # Properties box
         props_box = wx.StaticBox(self, label='Solver Properties')
         props_box_sizer = wx.StaticBoxSizer(props_box)
-        sizer.Add(props_box_sizer, 1, wx.EXPAND)
+        sizer.Add(props_box_sizer, 0, wx.EXPAND | wx.BOTTOM, 10)
+
+        # Properties box contents
+        properties_sizer = wx.GridBagSizer(10, 10)
 
         # Solver box contents
         solver_sizer = wx.GridBagSizer(10, 10)
@@ -97,44 +134,54 @@ class SolverControls(wx.Panel):
         self.solver_select.SetSelection(0)
         solver_sizer.Add(self.solver_select, (1, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
+
+        # Cities selection
+        # Lilach added
+        cities_select_label = wx.StaticText(solver_box,
+                                            label='Cities selection')
+        solver_sizer.Add(cities_select_label, (2, 0), (1, 2),
+                         wx.EXPAND | borders('trl'), 10)
+        self.cities_select = wx.Choice(solver_box, choices=self.num_of_cities)
+        self.cities_select.SetSelection(0)
+        solver_sizer.Add(self.cities_select, (3, 0), (1, 2),
+                         wx.EXPAND | borders('rl'), 10)
+
         # Delay setting
         delay_label = wx.StaticText(solver_box, label='Delay [ms]')
-        solver_sizer.Add(delay_label, (2, 0), (1, 2),
+        solver_sizer.Add(delay_label, (4, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
         self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
                                style=wx.SL_LABELS)
-        solver_sizer.Add(self.delay, (3, 0), (1, 2),
+        solver_sizer.Add(self.delay, (5, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
+
+
         # Show best path checkbox
         self.show_best = wx.CheckBox(solver_box,
                                      label='Show the best found path')
         self.show_best.SetValue(True)
-        solver_sizer.Add(self.show_best, (4, 0), (1, 2),
+        solver_sizer.Add(self.show_best, (6, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
         # Show current path checkbox
         self.show_current = wx.CheckBox(solver_box,
                                         label='Show current working path')
         self.show_current.SetValue(True)
-        solver_sizer.Add(self.show_current, (5, 0), (1, 2),
+        solver_sizer.Add(self.show_current, (7, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-        # Show optimal path checkbox
-        self.show_opt = wx.CheckBox(solver_box, label='Show optimal path')
-        self.show_opt.SetValue(True)
-        solver_sizer.Add(self.show_opt, (6, 0), (1, 2),
-                         wx.EXPAND | borders('rl'), 10)
+
         # Solve button
         self.solve_button = wx.Button(solver_box,
                                       label=self.SOLVE_BTN_INACTIVE)
-        solver_sizer.Add(self.solve_button, (7, 0), (1, 1),
+        solver_sizer.Add(self.solve_button, (8, 0), (1, 1),
                          wx.EXPAND | borders('l'), 10)
         # Reset button
         self.reset_button = wx.Button(solver_box, label='Reset')
-        solver_sizer.Add(self.reset_button, (7, 1), (1, 1),
+        solver_sizer.Add(self.reset_button, (8, 1), (1, 1),
                          wx.EXPAND | borders('r'), 10)
         # Progress bar
         self.progress = wx.Gauge(solver_box, range=100)
         # self.progress.SetMaxSize((-1, 10))
-        solver_sizer.Add(self.progress, (8, 0), (1, 2),
+        solver_sizer.Add(self.progress, (9, 0), (1, 2),
                          wx.EXPAND | borders('rbl'), 10)
         solver_box_sizer.Add(solver_sizer)
 
@@ -163,37 +210,63 @@ class SolverControls(wx.Panel):
         result_panel.SetSizer(result_sizer)
         res_box_sizer.Add(result_panel, 1)
 
+
         # Properties box contents
+
+        # Lilach added
+        # mutation setting
+        mutation_rate_label = wx.StaticText(props_box, label="Mutation_rate")
+        properties_sizer.Add(mutation_rate_label, (1, 0), (1, 2), wx.EXPAND |
+                         borders('rl'), 10)
+        self.mutation_rate = wx.Slider(props_box, value=0, minValue=0,
+                                       maxValue=1,
+                               style=wx.SL_LABELS)
+        properties_sizer.Add(self.mutation_rate, (2, 0), (1, 2),
+                         wx.EXPAND | borders('rl'), 10)
+
+
         self.solver_properties = SolverProperties(self)
-        props_box_sizer.Add(self.solver_properties, 1, wx.EXPAND | wx.ALL, 10)
+        props_box_sizer.Add(self.solver_properties, 0, wx.EXPAND | wx.ALL, 10)
+
 
         self.SetSizer(sizer)
 
         # Event bindings
-        self.solver_select.Bind(wx.EVT_CHOICE, self._on_select)
+        self.cities_select.Bind(wx.EVT_CHOICE, self._on_select_number_cities)
+        self.solver_select.Bind(wx.EVT_CHOICE, self._on_select_solver)
         self.solve_button.Bind(wx.EVT_BUTTON, self._on_solve)
         self.reset_button.Bind(wx.EVT_BUTTON, self._on_reset)
         self.delay.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
+        # Lilach added
+        # self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
         self.show_best.Bind(wx.EVT_CHECKBOX, self._on_view_change)
         self.show_current.Bind(wx.EVT_CHECKBOX, self._on_view_change)
-        self.show_opt.Bind(wx.EVT_CHECKBOX, self._on_view_change)
+        # Lilach removed
+        # self.show_opt.Bind(wx.EVT_CHECKBOX, self._on_view_change)
+        pub.subscribe(self._on_number_of_cities_change, 'NUM_OF_CITIES_CHANGE')
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
         pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
         pub.subscribe(self._on_solver_state_change, 'SOLVER_STATE_CHANGE')
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
 
         # Run solver selection event handler to create default solver
-        self._on_select(None)
+        self._on_select_solver(None)
 
-    def _on_select(self, event):
+    def _on_select_solver(self, event):
         """Handles selecting solver from solvers combobox.
         """
-
         solver_name = self.solver_names[self.solver_select.GetSelection()]
-        solver_class = self.solvers[solver_name]
-        solver = solver_class()
+        self.solver = self.get_solver(solver_name, self.dset, self.params[solver_name])
+        self.cur_solver = solver_name
+        pub.sendMessage('SOLVER_CHANGE', solver=solver_name)
 
-        pub.sendMessage('SOLVER_CHANGE', solver=solver)
+    # Lilach added
+    def _on_select_number_cities(self, event):
+        """Handles selecting num of cities from cities combobox.
+        """
+        self.dset = load_dset(f"./datasets/{event.String}_cities.npy")
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[self.cur_solver])
+        pub.sendMessage('NUM_OF_CITIES_CHANGE', num_of_cities=self.dset[CITIES])
 
     def _on_solve(self, event):
         """Handles clicking 'solve' button - runs `SolverRunner` with currently
@@ -248,9 +321,16 @@ class SolverControls(wx.Panel):
         options = {}
         options['show_best'] = self.show_best.GetValue()
         options['show_current'] = self.show_current.GetValue()
-        options['show_opt'] = self.show_opt.GetValue()
+        # Lilach removed
+        # options['show_opt'] = self.show_opt.GetValue()
 
         pub.sendMessage('VIEW_OPTION_CHANGE', **options)
+
+    def _on_number_of_cities_change(self, num_of_cities):
+        """Handles solver change event.
+        """
+
+        self.num_of_cities = num_of_cities
 
     def _on_solver_change(self, solver):
         """Handles solver change event.
@@ -341,7 +421,8 @@ class TSPView(wx.Panel):
         # Whether to show the best path
         self.show_best = True
         self.show_current = True
-        self.show_opt = True
+        # Lilach removed
+        # self.show_opt = True
 
         # GUI
         self._init_ui()
@@ -373,19 +454,20 @@ class TSPView(wx.Panel):
             return
 
         # Draw the optimal path
-        if self.show_opt and self._tsp.opt_path:
-            self._draw_path(dc, self._tsp.opt_path, self.OPT_COLOR)
+        # Lilach removed
+        # if self.show_opt and self._tsp.opt_path:
+        #     self._draw_path(dc, self._tsp.opt_path, self.OPT_COLOR)
 
         # Draw state if it's defined
         if self._state:
             # Draw current path if there's no best even if it's disabled
             draw_current = (
-                self._state.current and
-                (self.show_current or not self._state.best)
+                    self._state.current and
+                    (self.show_current or not self._state.best)
             )
             draw_best = (
-                (self._state.best or self._state.final) and
-                self.show_best
+                    (self._state.best or self._state.final) and
+                    self.show_best
             )
             # Draw paths
             if draw_best:
@@ -449,8 +531,9 @@ class TSPView(wx.Panel):
         if show_current is not None:
             self.show_current = show_current
 
-        if show_best is not None:
-            self.show_opt = show_opt
+        # Lilach removed
+        # if show_best is not None:
+        #     self.show_opt = show_opt
 
         self.Refresh()
 
@@ -507,7 +590,7 @@ class TSPView(wx.Panel):
         # Calculate for all points
         for c in cities:
             # Note the inverted y axis
-            x, y = (c[0] * side + exp),  (h - (c[1] * side + eyp))
+            x, y = (c[0] * side + exp), (h - (c[1] * side + eyp))
             self._points.append((x, y))
 
     def reset(self):
@@ -527,8 +610,8 @@ class SolverProperties(wx.propgrid.PropertyGrid):
     def __init__(self, parent):
         super(SolverProperties, self).__init__(parent,
                                                style=wxpg.PG_HIDE_MARGIN |
-                                               wxpg.PG_BOLD_MODIFIED |
-                                               wxpg.PG_TOOLTIPS)
+                                                     wxpg.PG_BOLD_MODIFIED |
+                                                     wxpg.PG_TOOLTIPS)
 
         # Currently selected solver
         self.solver = None
@@ -542,6 +625,7 @@ class SolverProperties(wx.propgrid.PropertyGrid):
         # Event bindings
         self.Bind(wxpg.EVT_PG_CHANGED, self._on_changed)
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
+
 
     def _on_changed(self, event):
         """Applies current properties values to the currently set solver.
@@ -571,32 +655,32 @@ class SolverProperties(wx.propgrid.PropertyGrid):
         # Reset the properties
         self.reset()
 
-        # Skip if there is no solver or solver has no properties
-        if not self.solver or not self.solver.properties:
-            return
+        # # Skip if there is no solver or solver has no properties
+        # if not self.solver or not self.solver.properties:
+        #     return
 
-        # For each property
-        for i, p in enumerate(self.solver.properties):
-            # Create property object with appropriate type
-            if p.type is int:
-                prop = wxpg.IntProperty()
-            elif p.type is float:
-                prop = wxpg.FloatProperty()
-            elif issubclass(p.type, Enum):
-                prop = wxpg.EnumProperty()
-                labels = list(map(lambda c: c.name, p.type))
-                values = list(map(lambda c: c.value, p.type))
-                prop_choices = wxpg.PGChoices(labels=labels, values=values)
-                prop.SetChoices(prop_choices)
-
-            # Set label and value
-            prop.SetLabel(p.name)
-            prop.SetValue(p.default)
-            prop.SetDefaultValue(p.default)
-            prop.SetAttribute('property_idx', i)
-
-            # And append the property object
-            self.Append(prop)
+        # # For each property
+        # for i, p in enumerate(self.solver.properties):
+        #     # Create property object with appropriate type
+        #     if p.type is int:
+        #         prop = wxpg.IntProperty()
+        #     elif p.type is float:
+        #         prop = wxpg.FloatProperty()
+        #     elif issubclass(p.type, Enum):
+        #         prop = wxpg.EnumProperty()
+        #         labels = list(map(lambda c: c.name, p.type))
+        #         values = list(map(lambda c: c.value, p.type))
+        #         prop_choices = wxpg.PGChoices(labels=labels, values=values)
+        #         prop.SetChoices(prop_choices)
+        #
+        #     # Set label and value
+        #     prop.SetLabel(p.name)
+        #     prop.SetValue(p.default)
+        #     prop.SetDefaultValue(p.default)
+        #     prop.SetAttribute('property_idx', i)
+        #
+        #     # And append the property object
+        #     self.Append(prop)
 
         # Fit columns and layout the parent
         self.FitColumns()

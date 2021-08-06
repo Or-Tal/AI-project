@@ -14,5 +14,5 @@ PyInstaller.__main__.run([
     '--name={}'.format(name),
     '--onefile',
     '--windowed',
-    os.path.join(package, 'noa_kirel/__main__.py')
+    os.path.join(package, '__main__.py')
 ])

@@ -59,7 +59,7 @@ def get_base_dir_and_name(save_path: str) -> (str, str):
     elif len(path) > 1 and not os.path.exists("/".join(path[:-1])):
         os.mkdir("/".join(path[:-1]))
     elif len(path) == 1:
-        base_dir = "."
+        base_dir = "noa_kirel"
     else:
         base_dir = "/".join(path[:-1])
 
@@ -75,9 +75,9 @@ def gen_dset_and_save(num_cities: int,
     generated dataset and save to given path
     """
     dset = gen_dset(num_cities, max_cost, min_rev, max_rev)
+    # TODO gen coords
     base_dir, file_name = get_base_dir_and_name(save_path)
     np.save("/".join([base_dir, file_name]), dset)
-
     return dset
 
 

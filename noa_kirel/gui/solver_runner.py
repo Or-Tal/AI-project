@@ -21,6 +21,12 @@ class SolverRunner(threading.Thread):
 
         threading.Thread.__init__(self)
 
+        #Lilach added
+        self.mutation_rate = 0
+        self.num_elite = 0
+        self.population_size = 0
+        self.generations = 0
+
         # Results queue
         self._queue = multiprocessing.Queue()
 

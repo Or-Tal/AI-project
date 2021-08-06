@@ -3,12 +3,11 @@ from enum import Enum
 from operator import itemgetter
 from random import shuffle
 
-from noa_kirel.tsplib import TSPLib, TSPLibTour
+from tsplib import TSPLib, TSPLibTour
 
 
 class TSP:
     """Internal representation of a Travelling Salesman Problem instance.
-
     Contains a few properties (name, type, comment, dimension), coordinates
     of cities and distance matrix.
     """

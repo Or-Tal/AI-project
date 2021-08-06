@@ -1,9 +1,9 @@
-import numpy as np
 import argparse
 import os
 import city_selection
 import partition
 import pandas as pd
+import matplotlib.pyplot as plt
 from constants import *
 from generate_dataset import main_gen_func
 from solvers.greedy_solver import GreedySolver
@@ -32,9 +32,8 @@ def check_args(a, dset):
     """
     if a.algorithm == GEN:
         if a.p_mutation < 0 or a.p_mutation > 1 or \
-            a.tour_length > dset[CITIES] or a.elitism_factor > a.tour_length:
+           a.tour_length > dset[CITIES] or a.elitism_factor > a.tour_length:
             raise ValueError("invalid hyper-parameters were given to genetic algorithm initializer")
-
 
 
 def get_solver(a, dset):
@@ -59,12 +58,19 @@ def get_solver(a, dset):
 
 
 def save_results(sol, scores, a):
-    if not os.path.exists("./results"):
-        os.mkdir("./results")
+    if not os.path.exists("results"):
+        os.mkdir("results")
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
     df = pd.DataFrame.from_dict({"scores": scores})
     df.to_csv(f"./results/{a.save_name}.csv")
+    fig = plt.figure()
+    plt.plot(scores)
+    plt.title("Score as a function of iteration")
+    plt.ylabel("Score")
+    plt.xlabel("iter")
+    plt.savefig(f"./results/{a.save_name}.png")
+    plt.close(fig)
 
 
 def main_func(a):

@@ -2,7 +2,7 @@ import os
 import unittest
 from tempfile import NamedTemporaryFile
 
-from noa_kirel.tsplib import TSPLib, TSPLibTour
+from tsplib import TSPLib, TSPLibTour
 
 
 class TestTSPLib(unittest.TestCase):
