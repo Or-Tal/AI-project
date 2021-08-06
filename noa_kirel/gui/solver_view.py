@@ -17,9 +17,6 @@ import os
 # Weird solution for importing solvers when frozen with PyInstaller
 
 
-
-
-
 class SolverView(wx.Panel):
     """Main view of the app, solver controls and tsp view.
     """
@@ -81,10 +78,9 @@ class SolverControls(wx.Panel):
 
         # List of all number of cities
         self.cities = {}
-        self.num_of_cities = sorted(["3", "6", "9"])
+        self.num_of_cities = NUM_OF_CITIES
 
         # Currently selected solver and tsp
-        cwd = os.getcwd()
         self.dset = load_dset("./datasets/3_cities.npy")
 
         self.params = {BF_SOL: {TOUR_LEN: 3},
@@ -117,10 +113,10 @@ class SolverControls(wx.Panel):
         # Properties box
         props_box = wx.StaticBox(self, label='Solver Properties')
         props_box_sizer = wx.StaticBoxSizer(props_box)
-        sizer.Add(props_box_sizer, 0, wx.EXPAND | wx.BOTTOM, 10)
+        sizer.Add(props_box_sizer, 1, wx.EXPAND)
 
         # Properties box contents
-        properties_sizer = wx.GridBagSizer(10, 10)
+        props_sizer = wx.GridBagSizer(10, 10)
 
         # Solver box contents
         solver_sizer = wx.GridBagSizer(10, 10)
@@ -147,12 +143,12 @@ class SolverControls(wx.Panel):
                          wx.EXPAND | borders('rl'), 10)
 
         # Delay setting
-        delay_label = wx.StaticText(solver_box, label='Delay [ms]')
-        solver_sizer.Add(delay_label, (4, 0), (1, 2),
+        mutation_rate = wx.StaticText(solver_box, label='Delay [ms]')
+        solver_sizer.Add(mutation_rate, (4, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-        self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
-                               style=wx.SL_LABELS)
-        solver_sizer.Add(self.delay, (5, 0), (1, 2),
+        self.mutation_rate = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
+                                       style=wx.SL_LABELS)
+        solver_sizer.Add(self.mutation_rate, (5, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
 
 
@@ -191,22 +187,15 @@ class SolverControls(wx.Panel):
         result_panel = wx.Panel(self)
         result_sizer = wx.GridBagSizer(10, 10)
         result_font = wx.Font(wx.FontInfo(16))
-        # Distance
-        result_label = wx.StaticText(result_panel, label='Distance:')
+        # Score
+        result_label = wx.StaticText(result_panel, label='Score:')
         result_sizer.Add(result_label, (0, 0), (0, 1),
                          wx.ALIGN_CENTER_VERTICAL | borders('tl'), 10)
         self.result = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
         self.result.SetFont(result_font)
         result_sizer.Add(self.result, (0, 1), (0, 1),
                          wx.ALIGN_CENTER_VERTICAL | borders('tr'), 10)
-        # Error
-        error_label = wx.StaticText(result_panel, label='Error:')
-        result_sizer.Add(error_label, (1, 0), (0, 1),
-                         wx.ALIGN_CENTER_VERTICAL | borders('bl'), 10)
-        self.error = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
-        self.error.SetFont(result_font)
-        result_sizer.Add(self.error, (1, 1), (0, 1),
-                         wx.ALIGN_CENTER_VERTICAL | borders('br'), 10)
+
         result_panel.SetSizer(result_sizer)
         res_box_sizer.Add(result_panel, 1)
 
@@ -215,19 +204,18 @@ class SolverControls(wx.Panel):
 
         # Lilach added
         # mutation setting
-        mutation_rate_label = wx.StaticText(props_box, label="Mutation_rate")
-        properties_sizer.Add(mutation_rate_label, (1, 0), (1, 2), wx.EXPAND |
-                         borders('rl'), 10)
-        self.mutation_rate = wx.Slider(props_box, value=0, minValue=0,
-                                       maxValue=1,
-                               style=wx.SL_LABELS)
-        properties_sizer.Add(self.mutation_rate, (2, 0), (1, 2),
+        mutation_rate = wx.StaticText(props_box, label='Mutation rate')
+        props_sizer.Add(mutation_rate, (1, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-
+        self.mutation_rate = wx.Slider(props_box, value=0, minValue=0, maxValue=1000,
+                                       style=wx.SL_LABELS)
+        props_sizer.Add(self.mutation_rate, (2, 0), (1, 2),
+                             wx.EXPAND | borders('rl'), 10)
 
         self.solver_properties = SolverProperties(self)
-        props_box_sizer.Add(self.solver_properties, 0, wx.EXPAND | wx.ALL, 10)
 
+        # todo: change 0 to 1
+        props_box_sizer.Add(self.solver_properties, 0, wx.EXPAND | wx.ALL, 10)
 
         self.SetSizer(sizer)
 
@@ -236,13 +224,11 @@ class SolverControls(wx.Panel):
         self.solver_select.Bind(wx.EVT_CHOICE, self._on_select_solver)
         self.solve_button.Bind(wx.EVT_BUTTON, self._on_solve)
         self.reset_button.Bind(wx.EVT_BUTTON, self._on_reset)
-        self.delay.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
+        self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
         # Lilach added
-        # self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
+        self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
         self.show_best.Bind(wx.EVT_CHECKBOX, self._on_view_change)
         self.show_current.Bind(wx.EVT_CHECKBOX, self._on_view_change)
-        # Lilach removed
-        # self.show_opt.Bind(wx.EVT_CHECKBOX, self._on_view_change)
         pub.subscribe(self._on_number_of_cities_change, 'NUM_OF_CITIES_CHANGE')
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
         pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
@@ -286,7 +272,7 @@ class SolverControls(wx.Panel):
 
             # Create and start the solver runner
             self.runner = SolverRunner(self.solver, self.tsp)
-            self.runner.delay = self.delay.GetValue() / 1000
+            self.runner.delay = self.mutation_rate.GetValue() / 1000
             self.runner.daemon = True
             self.runner.start()
             # Set state to running
@@ -312,7 +298,7 @@ class SolverControls(wx.Panel):
         if not self.running:
             return
 
-        self.runner.delay = self.delay.GetValue() / 1000
+        self.runner.mutation_rate = self.mutation_rate.GetValue() / 1000
 
     def _on_view_change(self, event):
         """Handles checking or unchecking one of view option checkboxes.
