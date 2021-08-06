@@ -17,6 +17,7 @@ class GreedySolver(Solver):
         self.costs = costs
         self.rev = revenues
         self.n = int(tour_length)
+        self.name = "greedy"
 
     def solve(self, ret_generator=True):
         sol = list()
@@ -48,3 +49,7 @@ class GreedySolver(Solver):
 
         # return greedy solution
         return sol, scores[-1] if ret_generator else scores[1:]
+
+    @name.setter
+    def name(self, value):
+        self._name = value
