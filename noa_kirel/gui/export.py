@@ -3,7 +3,7 @@ import os
 
 import wx
 
-from tspvisual.tsplib import TSPLibTour
+from noa_kirel.tsplib import TSPLibTour
 
 
 def export_results(file, results):

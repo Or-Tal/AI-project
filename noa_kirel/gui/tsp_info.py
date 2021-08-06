@@ -1,7 +1,7 @@
 import wx
 from pubsub import pub
 
-from tspvisual.gui.helpers import borders
+from noa_kirel.gui.helpers import borders
 
 
 class TSPInfo(wx.Panel):

@@ -3,6 +3,7 @@ import argparse
 import os
 import city_selection
 import partition
+import pandas as pd
 from constants import *
 from generate_dataset import main_gen_func
 from solvers.greedy_solver import GreedySolver
@@ -23,14 +24,17 @@ def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
     return np.load(dset_path, allow_pickle=True).tolist()
 
 
-def check_args(a: argparse.ArgumentParser):
+def check_args(a, dset):
     """
     validated arguments, throws ValueError in case of invalid arguments
     :param a:
     :return:
     """
-    # TODO fill
-    pass
+    if a.algorithm == GEN:
+        if a.p_mutation < 0 or a.p_mutation > 1 or \
+            a.tour_length > dset[CITIES] or a.elitism_factor > a.tour_length:
+            raise ValueError("invalid hyper-parameters were given to genetic algorithm initializer")
+
 
 
 def get_solver(a, dset):
@@ -59,6 +63,8 @@ def save_results(sol, scores, a):
         os.mkdir("./results")
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
+    df = pd.DataFrame.from_dict({"solution": sol, "scores": scores})
+    df.to_csv(f"./results/{a.save_name[:-4]}.csv")
 
 
 def main_func(a):
@@ -66,9 +72,10 @@ def main_func(a):
     main function that runs the solver
     """
     dset = load_dset(a.dset_path, a)
-    check_args(a)
+    check_args(a, dset)
     solver = get_solver(a, dset)
-    sol, scores = solver.solve(ret_generator=False)
+    ret = np.array([x for x in solver.solve()])
+    sol, scores = ret[:, 0][-1], ret[:, 1]
     save_results(sol, scores, a)
 
 
@@ -79,7 +86,7 @@ def parse_args():
     parser.add_argument("--dset_path", required=False, help="path/to/dataset.npy\nif you wish to regenerate a dataset"
                                                             " and run using the generated don't pass anything.\n see "
                                                             "n, max_cost, max_rev, min_rev, save_path arguments")
-    parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
+    parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GeneticSolver)
     parser.add_argument("--save_name", required=True, help="name of the results file to be saved",
                         default=1)
 
@@ -112,6 +119,6 @@ def parse_args():
     return ret
 
 
-# if __name__ == "__main__":
-#     args = parse_args()
-#     main_func(args)
+if __name__ == "__main__":
+    args = parse_args()
+    main_func(args)
