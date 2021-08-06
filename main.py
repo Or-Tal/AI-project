@@ -63,7 +63,7 @@ def save_results(sol, scores, a):
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
     df = pd.DataFrame.from_dict({"scores": scores})
-    df.to_csv(f"./results/{a.save_name[:-4]}.csv")
+    df.to_csv(f"./results/{a.save_name}.csv")
 
 
 def main_func(a):
