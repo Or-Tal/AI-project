@@ -19,6 +19,16 @@ class GreedySolver(Solver):
         self.n = int(tour_length)
         self.name = "greedy"
 
+    def score(self, sol):
+        res = 0
+        prev = -1
+        for x in sol:
+            res += self.rev[x] - self.costs[(prev, x)]
+            prev = x
+        return res
+
+
+
     def solve(self, ret_generator=True):
         sol = list()
         opts = deepcopy(self.cities)
@@ -41,7 +51,7 @@ class GreedySolver(Solver):
             # adds best candidate to solution
             sol.append(best_candidate)
             opts = opts - {best_candidate}
-            scores.append(scores[-1] + best_score)
+            scores.append(self.score(sol))
 
             # generator case
             if ret_generator:

@@ -13,12 +13,6 @@ from noa_kirel.partition import partition_1
 from noa_kirel.city_selection import city_selection_1
 import os
 
-#from solvers import *  # noqa: F403, F401
-# Weird solution for importing solvers when frozen with PyInstaller
-
-
-
-
 
 class SolverView(wx.Panel):
     """Main view of the app, solver controls and tsp view.
