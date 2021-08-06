@@ -1,4 +1,3 @@
-from enum import Enum
 from operator import itemgetter
 
 import wx
