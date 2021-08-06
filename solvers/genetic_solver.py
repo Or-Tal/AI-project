@@ -113,12 +113,9 @@ class GeneticSolver(Solver):
             for i in range(num_of_genes // 2):
                 x, y = self.__random_select(population, weights)
                 x_new, y_new = self.__crossover(x, y)
-                print(x_new, y_new)
                 new_population[i * 2:i * 2 + 2] = [x_new, y_new]
 
-            print(new_population)
             new_population = self.__mutation(new_population)
-            print(new_population)
             scores = self.__get_scores(new_population)
             best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             best_scores.append(best_score)
@@ -127,7 +124,7 @@ class GeneticSolver(Solver):
             if ret_generator:
                 yield best_solution, best_score
 
-        return best_solution, best_scores[-1] if ret_generator else best_scores
+        return best_solution, (best_scores[-1] if ret_generator else best_scores)
 
     def __get_scores(self, population):
         """
@@ -165,7 +162,7 @@ class GeneticSolver(Solver):
         :param y: 1d-array of a solution
         :return: two 1d-arrays of the new solutions
         """
-        partition, opposite_partition = self.__partition_func(len(x))
+        partition, opposite_partition = self.__partition_func(self.__tour_length)
         new_x, new_y = np.zeros_like(x), np.zeros_like(y)
 
         new_x[partition], new_y[partition] = x[partition], y[partition]
@@ -180,14 +177,14 @@ class GeneticSolver(Solver):
         :return: 2d-array of the new, mutated solutions
         """
         idx_to_be_mutated = np.random.choice([0, 1], size=len(population), p=[1 - self.__mutate_p, self.__mutate_p])
-        indices = np.argwhere(idx_to_be_mutated)
+        indices = np.argwhere(idx_to_be_mutated).flatten()
         genes_to_be_mutated = population[indices]
         for i in range(len(genes_to_be_mutated)):
             mutation_idx = np.random.randint(self.__tour_length)
             mutation_city = self.__city_selection_func(population, self.__num_cities)
             gen = genes_to_be_mutated[i]
             gen[mutation_idx] = mutation_city
-            population[indices[i][0]] = gen
+            population[indices[i]] = gen
         return population
 
     def __get_best_solution(self, population, scores, step):
