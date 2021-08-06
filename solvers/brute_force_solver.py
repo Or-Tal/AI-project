@@ -3,7 +3,7 @@ from tspvisual.solver import Solver
 from itertools import permutations
 
 
-class Optimal(Solver):
+class BruteForceSolver(Solver):
     """
     baseline greedy solver
     """
@@ -35,8 +35,10 @@ class Optimal(Solver):
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
+            if ret_generator:
+                yield sol, tmp_score
             scores.append(best_score)
-        return best_sol, scores
+        return best_sol, best_score if ret_generator else scores
 
 
 

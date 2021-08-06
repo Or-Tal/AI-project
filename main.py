@@ -6,8 +6,8 @@ import partition
 from constants import *
 from generate_dataset import main_gen_func
 from solvers.greedy_solver import GreedySolver
-from optimal_algorithm import Optimal
-from genetic_solver import GeneticSolver
+from solvers.brute_force_solver import BruteForceSolver
+from solvers.genetic_solver import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -37,7 +37,7 @@ def get_solver(a, dset):
     if a.algorithm == GREEDY:
         return GreedySolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     elif a.algorithm == OPT:
-        return Optimal(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
+        return BruteForceSolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
         city_selection_func = getattr(city_selection, f"city_selection_{a.city_selection}")
@@ -68,7 +68,7 @@ def main_func(a):
     dset = load_dset(a.dset_path, a)
     check_args(a)
     solver = get_solver(a, dset)
-    sol, scores = solver.solve()
+    sol, scores = solver.solve(ret_generator=False)
     save_results(sol, scores, a)
 
 
