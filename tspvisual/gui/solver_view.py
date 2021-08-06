@@ -8,9 +8,9 @@ from pubsub import pub
 from tspvisual.gui.helpers import borders
 from tspvisual.gui.solver_runner import SolverRunner
 from tspvisual.solver import Solver
-from tspvisual.solvers import *  # noqa: F403, F401
+from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
-from tspvisual.solvers import bf, bnb, sa, ts, ga  # noqa: F401
+from solvers import sa, ga  # noqa: F401
 
 
 class SolverView(wx.Panel):

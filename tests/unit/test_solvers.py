@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from tspvisual.solvers.ga import GASolver
+from solvers import GASolver
 from tspvisual.tsp import TSP, Path
 
 

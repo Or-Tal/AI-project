@@ -3,7 +3,7 @@ from itertools import product
 from math import inf
 
 from tspvisual.solver import Property, Solver, SolverState
-from tspvisual.solvers.greedy import GreedySolver
+from solvers import GreedySolver
 from tspvisual.tsp import TSP, Neighbourhood, Path
 
 

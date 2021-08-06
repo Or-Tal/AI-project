@@ -1,9 +1,5 @@
 import unittest
 
-from tspvisual.solvers.bf import BFSolver
-from tspvisual.solvers.bnb import BnBSolver
-from tspvisual.solvers.greedy import GreedySolver
-
 
 class TestSolvers(unittest.TestCase):
 
