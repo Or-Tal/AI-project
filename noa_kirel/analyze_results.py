@@ -2,11 +2,12 @@ import os
 import pandas as pd
 
 
-ANALYZE_PATH = "analyzed_results.csv"
+ANALYZE_SMALL_PATH = "analyzed_small_results.csv"
+ANALYZE_BIG_PATH = "analyzed_big_results.csv"
 
 
 def is_interesting(filename):
-    return filename != ANALYZE_PATH and filename[-3:] == 'csv'
+    return filename != ANALYZE_BIG_PATH and filename != ANALYZE_SMALL_PATH and filename[-3:] == 'csv'
 
 
 def get_csvs(dir_path):
@@ -23,12 +24,14 @@ def parse_csv(csv_path):
     population_size = int(split_path[-4])
     elitism_factor = int(split_path[-1][:-4])
     p_mutant = float(split_path[4])
+    algorithm = split_path[-3]
 
     df = pd.read_csv(csv_path).rename(columns={"Unnamed: 0": 'iteration'})
     first_max_iteration = df['scores'].argmax()
     max_value = df['scores'].max()
 
-    analyzed_df = pd.DataFrame({"num_cities": [num_cities],
+    analyzed_df = pd.DataFrame({"algorithm": [algorithm],
+                                "num_cities": [num_cities],
                                 "population_size": [population_size],
                                 "elitism_factor": [elitism_factor],
                                 "p_mutant": [p_mutant],
@@ -40,8 +43,7 @@ def parse_csv(csv_path):
 
 if __name__ == '__main__':
     files = get_csvs("results")
-    # files.sort(key=lambda file: (file.split('_')[2], file.split('_')[4], file.split('_')[-8], file.split('_')[-2]))
     all_concatenated = pd.concat([parse_csv(f"results/{file}") for file in files])
     all_concatenated = all_concatenated.sort_values(by=['num_cities', 'population_size',
                                                         'elitism_factor', 'p_mutant'])
-    all_concatenated.to_csv(f"results/{ANALYZE_PATH}", index=False)
+    all_concatenated.to_csv(f"results/{ANALYZE_BIG_PATH}", index=False)

@@ -1,6 +1,7 @@
 import numpy as np
 from collections import namedtuple
 from main import main_func
+from constants import *
 
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
@@ -61,10 +62,10 @@ if __name__ == '__main__':
     large_tour_lengths = [30]
     large_elitism_factors = [30]
 
-    # run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, steps_thresholds,
-    #                 score_thresholds, small_population_sizes, ["genetic"])
+    # run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
+    #                 score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL])
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, large_population_sizes, ["genetic", "greedy"], large_tour_lengths,
+                    score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
                     large_elitism_factors)
 
