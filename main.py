@@ -5,7 +5,7 @@ import city_selection
 import partition
 from constants import *
 from generate_dataset import main_gen_func
-from greedy_algorithm import Greedy
+from solvers.greedy_solver import GreedySolver
 from optimal_algorithm import Optimal
 from genetic_solver import GeneticSolver
 
@@ -35,7 +35,7 @@ def check_args(a: argparse.ArgumentParser):
 
 def get_solver(a, dset):
     if a.algorithm == GREEDY:
-        return Greedy(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
+        return GreedySolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     elif a.algorithm == OPT:
         return Optimal(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     else:
@@ -80,9 +80,6 @@ def parse_args():
                                                             " and run using the generated don't pass anything.\n see "
                                                             "n, max_cost, max_rev, min_rev, save_path arguments")
     parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
-    parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
-    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic",
-                        default=1)
     parser.add_argument("--save_name", required=True, help="name of the results file to be saved",
                         default=1)
 
@@ -106,7 +103,10 @@ def parse_args():
     parser.add_argument("--score_th", default=np.inf, help="threshold for max score", required=False)
     parser.add_argument("--population_size", default=100, help="population size", required=False)
     parser.add_argument("--tour_length", default=30, help="number of tour days", required=False)
-
+    parser.add_argument("--elitism_factor", default=2, help="elitism factor", required=False)
+    parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
+    parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic",
+                        default=1)
 
     ret = parser.parse_args()
     return ret

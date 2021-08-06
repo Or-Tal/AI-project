@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.special import softmax
-from solver import Solver
+from solver_old import Solver
 
 INITIAL_CITY = -1
 
