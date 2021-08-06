@@ -49,6 +49,7 @@ class GeneticSolver(Solver):
         self.__mutate_p = mutate_p
         self.__elitism_factor = elitism_factor
         self.__initial_population = self.__get_init_population()
+        self.name = "genetic"
 
     @staticmethod
     def __get_fitness_function(transfer_costs, city_rev):
@@ -201,3 +202,7 @@ class GeneticSolver(Solver):
         if step > self.__steps_threshold or best_score >= self.__score_threshold:
             best_solution = population[np.argmax(scores)]
         return best_solution, best_score
+
+    @name.setter
+    def name(self, value):
+        self._name = value

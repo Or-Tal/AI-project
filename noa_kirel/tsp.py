@@ -8,7 +8,6 @@ from noa_kirel.tsplib import TSPLib, TSPLibTour
 
 class TSP:
     """Internal representation of a Travelling Salesman Problem instance.
-
     Contains a few properties (name, type, comment, dimension), coordinates
     of cities and distance matrix.
     """

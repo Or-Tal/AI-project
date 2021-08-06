@@ -12,8 +12,6 @@ def parse_args():
         description='Program visualising process of solving of the Travelling \
             Salesman Problem.'
     )
-    parser.add_argument('file', type=str, nargs='?', default=None,
-                        help='TSP instance to open')
     return parser.parse_args()
 
 

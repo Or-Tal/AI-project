@@ -13,6 +13,7 @@ class BruteForceSolver(Solver):
         self.costs = costs
         self.rev = revenues
         self.n = int(tour_length)
+        self.name = "brute_force"
 
     def score(self, sol: np.ndarray):
         """
@@ -39,6 +40,10 @@ class BruteForceSolver(Solver):
                 yield sol, tmp_score
             scores.append(best_score)
         return best_sol, best_score if ret_generator else scores
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
 
 

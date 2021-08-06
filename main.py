@@ -32,9 +32,8 @@ def check_args(a, dset):
     """
     if a.algorithm == GEN:
         if a.p_mutation < 0 or a.p_mutation > 1 or \
-            a.tour_length > dset[CITIES] or a.elitism_factor > a.tour_length:
+           a.tour_length > dset[CITIES] or a.elitism_factor > a.tour_length:
             raise ValueError("invalid hyper-parameters were given to genetic algorithm initializer")
-
 
 
 def get_solver(a, dset):

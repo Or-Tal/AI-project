@@ -12,7 +12,8 @@ from noa_kirel.tsp import TSP
 
 
 class TSPVisual(wx.Frame):
-    """Main app window wrapping around everything else.
+    """
+    Main app window wrapping around everything else.
     """
 
     DEFAULT_TITLE = 'No instance loaded'
