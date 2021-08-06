@@ -1,6 +1,6 @@
 import numpy as np
 from collections import namedtuple
-from main import main_func
+from noa_kirel.main import main_func
 
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
