@@ -2,8 +2,8 @@ import unittest
 from copy import deepcopy
 from unittest.mock import patch
 
-from tspvisual.tsp import TSP, Neighbourhood, Path
-from tspvisual.tsplib import TSPLib, TSPLibTour
+from noa_kirel.tsp import TSP, Neighbourhood, Path
+from noa_kirel.tsplib import TSPLib, TSPLibTour
 
 
 class TestPath(unittest.TestCase):
@@ -243,7 +243,7 @@ class TestTSP(unittest.TestCase):
             [13, 14, 15, 0]
         ]
 
-    @patch('tspvisual.tsp.TSPLib.weight')
+    @patch('noa_kirel.tsp.TSPLib.weight')
     def test_calc_distances(self, mock_tsplib):
         self.tsp.specification['DIMENSION'] = len(self.distances)
         mock_tsplib.side_effect = lambda i, j: self.distances[i][j]

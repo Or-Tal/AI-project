@@ -6,7 +6,7 @@ install:
 
 script:
 - python -m unittest discover -s tests
-- flake8 tspvisual
+- flake8 noa_kirel
 
 jobs:
   include:
@@ -52,7 +52,7 @@ jobs:
     - pip install -r requirements-build.txt
     script:
     - python -m build linux
-    - mv dist/tspvisual-linux dist/tspvisual-${TRAVIS_TAG}-linux
+    - mv dist/noa_kirel-linux dist/noa_kirel-${TRAVIS_TAG}-linux
     deploy:
       edge: true
       provider: releases
@@ -76,7 +76,7 @@ jobs:
     - pip install -r requirements-build.txt
     script:
     - python -m build windows
-    - mv dist/tspvisual-windows.exe dist/tspvisual-${TRAVIS_TAG}-windows.exe
+    - mv dist/noa_kirel-windows.exe dist/noa_kirel-${TRAVIS_TAG}-windows.exe
     deploy:
       edge: true
       provider: releases

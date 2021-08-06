@@ -1,5 +1,5 @@
 import numpy as np
-from tspvisual.solver import Solver
+from noa_kirel.solver import Solver
 from itertools import permutations
 
 

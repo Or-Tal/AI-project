@@ -1,7 +1,7 @@
 import unittest
 
-from tspvisual.tsp import Path
-from tspvisual.tsplib import Lines, TSPLib, TSPLibTour
+from noa_kirel.tsp import Path
+from noa_kirel.tsplib import Lines, TSPLib, TSPLibTour
 
 
 class TestTSPLib(unittest.TestCase):

@@ -5,9 +5,9 @@ import wx
 import wx.propgrid as wxpg
 from pubsub import pub
 
-from tspvisual.gui.helpers import borders
-from tspvisual.gui.solver_runner import SolverRunner
-from tspvisual.solver import Solver
+from noa_kirel.gui.helpers import borders
+from noa_kirel.gui.solver_runner import SolverRunner
+from noa_kirel.solver import Solver
 from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
 from solvers import sa, ga  # noqa: F401
