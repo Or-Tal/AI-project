@@ -1,4 +1,3 @@
-import numpy as np
 import argparse
 import os
 import city_selection
@@ -6,9 +5,9 @@ import partition
 import pandas as pd
 from constants import *
 from generate_dataset import main_gen_func
-from solvers.greedy_solver import GreedySolver
-from solvers.brute_force_solver import BruteForceSolver
-from solvers.genetic_solver import GeneticSolver
+from solvers import GreedySolver
+from solvers import BruteForceSolver
+from solvers import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -58,8 +57,8 @@ def get_solver(a, dset):
 
 
 def save_results(sol, scores, a):
-    if not os.path.exists("./results"):
-        os.mkdir("./results")
+    if not os.path.exists("results"):
+        os.mkdir("results")
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
     df = pd.DataFrame.from_dict({"scores": scores})

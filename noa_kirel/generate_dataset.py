@@ -59,7 +59,7 @@ def get_base_dir_and_name(save_path: str) -> (str, str):
     elif len(path) > 1 and not os.path.exists("/".join(path[:-1])):
         os.mkdir("/".join(path[:-1]))
     elif len(path) == 1:
-        base_dir = "."
+        base_dir = "noa_kirel"
     else:
         base_dir = "/".join(path[:-1])
 
