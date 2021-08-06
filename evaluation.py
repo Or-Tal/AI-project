@@ -47,7 +47,7 @@ def run_hyperparams(cur_dset_paths,
                                             save_name = f"num_cities_{num_cities}_length_{tour_length}_partition_{1}" \
                                                         f"_city_selection_{city_selection}_p_{p}_" \
                                                         f"steps_{steps_threshold}_score_{score_thresholds}_population_" \
-                                                        f"{population_size}_{algorithm}"
+                                                        f"{population_size}_{algorithm}_elitism_{elitism_factor}"
                                             args = Args(new_path, algorithm, partition, city_selection, p,
                                                         steps_threshold, score_threshold, population_size, tour_length,
                                                         elitism_factor, save_name)
@@ -60,12 +60,12 @@ if __name__ == '__main__':
                         "100_cities.npy"]
     partitions = [1]
     city_selections = [1]
-    p_mutations = [0.001, 0.01, 0.1, 0.2]
-    steps_thresholds = [500, 2000]
+    p_mutations = [0.1, 0.2, 0.3]
+    steps_thresholds = [2000, 4000]
     score_thresholds = [np.inf]
     small_population_sizes = [7, 10, 20, 50]
-    large_population_sizes = [10, 30, 50, 100]
-    large_tour_lengths = [10, 25, 40]
+    large_population_sizes = [100, 150, 200]
+    large_tour_lengths = [30]
     large_elitism_factors = [2, 6, 10, 30]
 
     run_hyperparams(small_dset_paths, partitions, city_selections, p_mutations, steps_thresholds,
