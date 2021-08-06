@@ -236,10 +236,7 @@ class SolverControls(wx.Panel):
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
-        # todo: change it !!!!!
-        #num_of_cities = self.num_of_cities[1]
-        #solver_class = self.solvers[num_of_cities]
-        #solver = solver_class()
+        print("")
 
         pub.sendMessage('NUM_OF_CITIES_CHANGE')
 
