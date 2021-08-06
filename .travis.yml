@@ -1,0 +1,87 @@
+language: python
+cache: pip
+
+install:
+- pip install -r requirements-test.txt
+
+script:
+- python -m unittest discover -s tests
+- flake8 noa_kirel
+
+jobs:
+  include:
+  - name: Python 3.7 on Linux
+    stage: test
+    os: linux
+    dist: bionic
+    language: python
+    python: '3.7'
+  - name: Python 3.8 on Linux
+    stage: test
+    os: linux
+    dist: bionic
+    language: python
+    python: '3.8'
+  - name: Python 3.7 on Windows
+    stage: test
+    os: windows
+    language: sh
+    python: '3.7'
+    before_install:
+    - choco install python3 --version=3.7.4 --params "/InstallDir:C:\\Python"
+    - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+    - python -m pip install --upgrade pip wheel
+  - name: Python 3.8 on Windows
+    stage: test
+    os: windows
+    language: sh
+    python: '3.8'
+    before_install:
+    - choco install python3 --version=3.8 --params "/InstallDir:C:\\Python"
+    - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+    - python -m pip install --upgrade pip wheel
+  - name: PyInstaller on Linux
+    stage: deploy
+    if: tag IS present
+    os: linux
+    dist: bionic
+    language: python
+    python: '3.7'
+    install:
+    - pip install -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 -r requirements.txt
+    - pip install -r requirements-build.txt
+    script:
+    - python -m build linux
+    - mv dist/noa_kirel-linux dist/noa_kirel-${TRAVIS_TAG}-linux
+    deploy:
+      edge: true
+      provider: releases
+      file: dist/*
+      skip_cleanup: true
+      overwrite: true
+      on:
+        tags: true
+  - name: PyInstaller on Windows
+    stage: deploy
+    if: tag IS present
+    os: windows
+    language: sh
+    python: '3.7'
+    before_install:
+    - choco install python3 --version=3.7.4 --params "/InstallDir:C:\\Python"
+    - export PATH="/c/Python:/c/Python/Scripts:$PATH"
+    - python -m pip install --upgrade pip wheel
+    install:
+    - pip install -r requirements.txt
+    - pip install -r requirements-build.txt
+    script:
+    - python -m build windows
+    - mv dist/noa_kirel-windows.exe dist/noa_kirel-${TRAVIS_TAG}-windows.exe
+    deploy:
+      edge: true
+      provider: releases
+      file: dist/*
+      skip_cleanup: true
+      overwrite: true
+      on:
+        tags: true

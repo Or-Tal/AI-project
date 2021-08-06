@@ -8,9 +8,9 @@ def partition_1(n):
     :return: a binary 1d-array representing which indices to take from the first solution to the crossover solution
     """
     slice_point = np.random.randint(n)
-    indices = np.ones(n)
-    indices[slice_point:] = 0
-    return indices
+    indices = np.arange(n)
+    indices, opposite_indices = indices[:slice_point], indices[slice_point:]
+    return indices, opposite_indices
 
 
 def partition_2(n):
@@ -21,7 +21,7 @@ def partition_2(n):
     """
     num_indices_to_flip = np.random.randint(n)
     indices_to_flip = np.random.choice(np.arange(n), size=num_indices_to_flip)
-    indices = np.ones(n)
+    indices = np.ones(n, dtype=int)
     indices[indices_to_flip] = 0
     return indices
 

@@ -1,23 +1,24 @@
 import numpy as np
-from solver_old import Solver
+from noa_kirel.solver import Solver
 from copy import deepcopy
 
 
-class Greedy(Solver):
+class GreedySolver(Solver):
     """
     baseline greedy solver
     """
     def __init__(self,
-                 n_cities,
-                 costs,
-                 revenues,
-                 tour_length):
+                 n_cities: int,
+                 costs: dict,
+                 revenues: dict,
+                 tour_length: int):
+        super().__init__()
         self.cities = set(range(n_cities))
         self.costs = costs
         self.rev = revenues
         self.n = int(tour_length)
 
-    def solve(self):
+    def solve(self, ret_generator=True):
         sol = list()
         opts = deepcopy(self.cities)
         scores = [0]
@@ -41,7 +42,9 @@ class Greedy(Solver):
             opts = opts - {best_candidate}
             scores.append(scores[-1] + best_score)
 
+            # generator case
+            if ret_generator:
+                yield sol, scores[-1]
+
         # return greedy solution
-        return sol, scores[1:]
-
-
+        return sol, scores[-1] if ret_generator else scores[1:]
