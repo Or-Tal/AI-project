@@ -3,12 +3,12 @@ from multiprocessing import freeze_support
 
 import wx
 
-from tspvisual.gui.tspvisual import TSPVisual
+from noa_kirel.gui.tspvisual import TSPVisual
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        prog='tspvisual',
+        prog='noa_kirel',
         description='Program visualising process of solving of the Travelling \
             Salesman Problem.'
     )

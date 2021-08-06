@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from solvers import GASolver
-from tspvisual.tsp import TSP, Path
+from noa_kirel.tsp import TSP, Path
 
 
 class TestGASolver(TestCase):
@@ -62,8 +62,8 @@ class TestGASolver(TestCase):
 
         self._test_crossover(self.gasolver._crossover_nwox, expected)
 
-    @patch('tspvisual.tsp.TSP.path_dist', return_value=0)
-    @patch('tspvisual.solvers.ga.GASolver._rand_subpath')
+    @patch('noa_kirel.tsp.TSP.path_dist', return_value=0)
+    @patch('noa_kirel.solvers.ga.GASolver._rand_subpath')
     def _test_crossover(self, fun, expected, mock_rand_subpath, mock_dist):
         for (p1, p2, subpath), exp in zip(self.data, expected):
             with self.subTest(p1=p1, p2=p2, subpath=subpath):

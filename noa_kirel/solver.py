@@ -1,11 +1,5 @@
 import abc
 import time
-from collections import namedtuple
-
-# SolverState = namedtuple('SolverState', 'time progress current best final',
-#                          defaults=[False])
-
-Property = namedtuple('Property', 'name field type default')
 
 
 class Solver(abc.ABC):

@@ -3,7 +3,7 @@ import sys
 
 import PyInstaller.__main__
 
-package = 'tspvisual'
+package = 'noa_kirel'
 
 if len(sys.argv) > 1:
     name = f'{package}-{sys.argv[1]}'
@@ -14,5 +14,5 @@ PyInstaller.__main__.run([
     '--name={}'.format(name),
     '--onefile',
     '--windowed',
-    os.path.join(package, 'tspvisual/__main__.py')
+    os.path.join(package, 'noa_kirel/__main__.py')
 ])

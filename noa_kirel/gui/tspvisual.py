@@ -3,12 +3,12 @@ import wx.adv
 import wx.lib.inspection
 from pubsub import pub
 
-from tspvisual.gui.export import export_results, export_scr, export_tour
-from tspvisual.gui.helpers import borders
-from tspvisual.gui.solver_stats import SolverStats
-from tspvisual.gui.solver_view import SolverView
-from tspvisual.gui.tsp_info import TSPInfo
-from tspvisual.tsp import TSP
+from noa_kirel.gui.export import export_results, export_scr, export_tour
+from noa_kirel.gui.helpers import borders
+from noa_kirel.gui.solver_stats import SolverStats
+from noa_kirel.gui.solver_view import SolverView
+from noa_kirel.gui.tsp_info import TSPInfo
+from noa_kirel.tsp import TSP
 
 
 class TSPVisual(wx.Frame):
