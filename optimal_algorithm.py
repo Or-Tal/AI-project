@@ -8,10 +8,11 @@ class Optimal(Solver):
     """
     baseline greedy solver
     """
-    def __init__(self, cities: List[int],
-                 costs: Dict[(int, int)],
-                 revenues: Dict[int],
-                 tour_length: int):
+    def __init__(self,
+                 cities,
+                 costs,
+                 revenues,
+                 tour_length):
         self.cities = set(cities)
         self.costs = costs
         self.rev = revenues
