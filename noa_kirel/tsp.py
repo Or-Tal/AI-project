@@ -3,7 +3,7 @@ from enum import Enum
 from operator import itemgetter
 from random import shuffle
 
-from noa_kirel.tsplib import TSPLib, TSPLibTour
+from tsplib import TSPLib, TSPLibTour
 
 
 class TSP:

@@ -5,12 +5,11 @@ import wx
 import wx.propgrid as wxpg
 from pubsub import pub
 
-from noa_kirel.gui.helpers import borders
-from noa_kirel.gui.solver_runner import SolverRunner
-from noa_kirel.solver import Solver
-from tspvisual.solvers import *  # noqa: F403, F401
+from gui.helpers import borders
+from gui.solver_runner import SolverRunner
+from solver import Solver
+#from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
-from tspvisual.solvers import bf, bnb, sa, ts, ga  # noqa: F401
 
 
 class SolverView(wx.Panel):
@@ -61,6 +60,7 @@ class SolverControls(wx.Panel):
 
         # Currently selected solver and tsp
         self.solver = None
+
         self.tsp = None
 
         # Current `SolverRunner`
@@ -236,6 +236,7 @@ class SolverControls(wx.Panel):
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
+        # todo: change it !!!!!
         print("")
 
         pub.sendMessage('NUM_OF_CITIES_CHANGE')

@@ -3,7 +3,7 @@ from multiprocessing import freeze_support
 
 import wx
 
-from noa_kirel.gui.tspvisual import TSPVisual
+from gui.tspvisual import TSPVisual
 
 
 def parse_args():
@@ -18,7 +18,7 @@ def parse_args():
 def main():
     args = parse_args()
     app = wx.App()
-    TSPVisual(args.file)
+    TSPVisual()
     app.MainLoop()
 
 

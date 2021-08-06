@@ -1,5 +1,5 @@
 import numpy as np
-from noa_kirel.solver import Solver
+from solver import Solver
 from itertools import permutations
 
 
