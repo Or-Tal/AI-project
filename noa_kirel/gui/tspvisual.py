@@ -7,7 +7,7 @@ from noa_kirel.gui.export import export_results, export_scr, export_tour
 from noa_kirel.gui.helpers import borders
 from noa_kirel.gui.solver_stats import SolverStats
 from noa_kirel.gui.solver_view import SolverView
-from noa_kirel.gui.tsp_info import TSPInfo
+#from noa_kirel.gui.tsp_info import TSPInfo
 from noa_kirel.tsp import TSP
 
 
@@ -81,10 +81,10 @@ class TSPVisual(wx.Frame):
         notebook = wx.Notebook(panel)
         self.solver_view = SolverView(notebook)
         self.solver_stats = SolverStats(notebook)
-        self.tsp_info = TSPInfo(notebook)
+        #self.tsp_info = TSPInfo(notebook)
         notebook.AddPage(self.solver_view, 'Solver')
         notebook.AddPage(self.solver_stats, 'Stats')
-        notebook.AddPage(self.tsp_info, 'Info')
+        #notebook.AddPage(self.tsp_info, 'Info')
         sizer.Add(notebook, 1, wx.EXPAND | borders('lrb'), 10)
 
         panel.SetSizer(sizer)
