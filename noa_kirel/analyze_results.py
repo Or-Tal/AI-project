@@ -1,13 +1,24 @@
 import os
 import pandas as pd
-
+from noa_kirel.constants import *
 
 ANALYZE_SMALL_PATH = "analyzed_small_results.csv"
-ANALYZE_BIG_PATH = "analyzed_big_results.csv"
+ANALYZE_LARGE_PATH = "analyzed_large_results.csv"
+
+COLS_LARGE_CITY = ["num_cities", "tour_length", "population_size", "elitism_factor", "p_mutant",
+                   "genetic_first_max_iteration", "genetic_max_score", "greedy_max_score",
+                   "genetic_time_achieved", "greedy_time_achieved"]
+
+COLS_SMALL_CITY = ["num_cities", "tour_length", "population_size", "elitism_factor", "p_mutant",
+                   "genetic_first_max_iteration", "genetic_max_score", "greedy_max_score", "bf_max_score",
+                   "genetic_time_achieved", "greedy_time_achieved", "bf_time_achieved"]
 
 
 def is_interesting(filename):
-    return filename != ANALYZE_BIG_PATH and filename != ANALYZE_SMALL_PATH and filename[-3:] == 'csv'
+    split_path = filename.split('_')
+    algorithm = split_path[-3]
+    return filename != ANALYZE_LARGE_PATH and filename != ANALYZE_SMALL_PATH \
+           and filename[-3:] == 'csv' and algorithm == GEN
 
 
 def get_csvs(dir_path):
@@ -18,32 +29,69 @@ def get_csvs(dir_path):
     return [filename for filename in os.listdir(dir_path) if is_interesting(filename)]
 
 
-def parse_csv(csv_path):
+def parse_csv(csv_path, small_cities=False):
     split_path = csv_path.split('_')
     num_cities = int(split_path[2])
-    population_size = int(split_path[-4])
-    elitism_factor = int(split_path[-1][:-4])
     p_mutant = float(split_path[4])
-    algorithm = split_path[-3]
+    population_size = int(split_path[6])
+    elitism_factor = int(split_path[9])
+    tour_length = int(split_path[11][:-4])
 
-    df = pd.read_csv(csv_path).rename(columns={"Unnamed: 0": 'iteration'})
-    first_max_iteration = df['scores'].argmax()
-    max_value = df['scores'].max()
+    genetic_df = pd.read_csv(csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+    gen_first_max_iteration = genetic_df['scores'].argmax()
+    gen_max_value = genetic_df['scores'].max()
+    gen_time_achieved = genetic_df['times'].iloc[gen_first_max_iteration]
 
-    analyzed_df = pd.DataFrame({"algorithm": [algorithm],
-                                "num_cities": [num_cities],
-                                "population_size": [population_size],
-                                "elitism_factor": [elitism_factor],
-                                "p_mutant": [p_mutant],
-                                "first_max_iteration": [first_max_iteration],
-                                "max_score": [max_value]})
+    split_path[7] = GREEDY
+    greedy_csv_path = '_'.join(split_path)
+    greedy_df = pd.read_csv(greedy_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+    greedy_max_value = greedy_df['scores'].iloc[-1]
+    greedy_time_achieved = greedy_df['times'].iloc[-1]
+
+    df_dict = {"num_cities": [num_cities],
+               "tour_length": [tour_length],
+               "population_size": [population_size],
+               "elitism_factor": [elitism_factor],
+               "p_mutant": [p_mutant],
+               "genetic_first_max_iteration": [gen_first_max_iteration],
+               "genetic_max_score": [gen_max_value],
+               "greedy_max_score": [greedy_max_value],
+               "genetic_time_achieved": [gen_time_achieved],
+               "greedy_time_achieved": [greedy_time_achieved]}
+
+    if small_cities:
+        split_path[7] = BF_SOL
+        bf_csv_path = '_'.join(split_path)
+        bf_df = pd.read_csv(bf_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+        bf_max_value = bf_df['scores'].iloc[-1]
+        bf_time_achieved = bf_df['times'].iloc[-1]
+        df_dict["bf_max_score"] = [bf_max_value]
+        df_dict["bf_time_achieved"] = [bf_time_achieved]
+
+    cols = COLS_SMALL_CITY if small_cities else COLS_LARGE_CITY
+    analyzed_df = pd.DataFrame(df_dict)[cols]
 
     return analyzed_df
 
 
-if __name__ == '__main__':
-    files = get_csvs("results")
-    all_concatenated = pd.concat([parse_csv(f"results/{file}") for file in files])
+def analyze_large_dataset():
+    files = get_csvs("results/large")
+    all_concatenated = pd.concat([parse_csv(f"results/large/{file}") for file in files])
     all_concatenated = all_concatenated.sort_values(by=['num_cities', 'population_size',
                                                         'elitism_factor', 'p_mutant'])
-    all_concatenated.to_csv(f"results/{ANALYZE_BIG_PATH}", index=False)
+    all_concatenated.to_csv(f"results/large/{ANALYZE_LARGE_PATH}", index=False)
+
+
+def analyze_small_dataset():
+    files = get_csvs("results/small")
+    all_concatenated = pd.concat([parse_csv(f"results/small/{file}", small_cities=True) for file in files])
+    all_concatenated = all_concatenated.sort_values(by=['num_cities', 'population_size',
+                                                        'elitism_factor', 'p_mutant'])
+    all_concatenated.to_csv(f"results/small/{ANALYZE_SMALL_PATH}", index=False)
+
+
+if __name__ == '__main__':
+    analyze_small_dataset()
+    analyze_large_dataset()
+
+

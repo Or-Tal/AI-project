@@ -7,3 +7,5 @@ if __name__ == "__main__":
         os.system(f"python generate_dataset.py --n {i} --save_path ./datasets/{i}_cities.npy")
     for i in range(50, 101, 10):
         os.system(f"python generate_dataset.py --n {i} --save_path ./datasets/{i}_cities.npy")
+    for i in range(150, 501, 50):
+        os.system(f"python generate_dataset.py --n {i} --save_path ./datasets/{i}_cities.npy")

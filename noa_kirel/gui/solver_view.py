@@ -610,7 +610,8 @@ class TSPView(wx.Panel):
 
     @tsp.setter
     def tsp(self, tsp):
-        """Sets tsp instance, triggers point calculation and repaint.
+        """
+        Sets tsp instance, triggers point calculation and repaint.
         """
 
         self._tsp = tsp
@@ -625,7 +626,8 @@ class TSPView(wx.Panel):
         self.Refresh()
 
     def calculate_points(self):
-        """Calculates positions of points representing cities.
+        """
+        Calculates positions of points representing cities.
         """
 
         # Skip if no cities are set
@@ -658,7 +660,8 @@ class TSPView(wx.Panel):
             self._points.append((x, y))
 
     def reset(self):
-        """Resets this control to its initial empty state.
+        """
+        Resets this control to its initial empty state.
         """
 
         self._cities = []
