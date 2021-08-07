@@ -3,6 +3,7 @@ from collections import namedtuple
 from noa_kirel.main import main_func
 from noa_kirel.constants import *
 
+
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
                            'partition',
