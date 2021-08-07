@@ -92,6 +92,11 @@ class SolverControls(wx.Panel):
         self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
         self.tsp = None
 
+        # Current `SolverRunner`
+        self.runner = None
+        # Whether ther is currently running solver
+        self.running = False
+
         self._init_ui()
 
     def _init_ui(self):
@@ -242,7 +247,7 @@ class SolverControls(wx.Panel):
         generations = wx.StaticText(props_box, label='Generations')
         props_sizer.Add(generations, (2, 1), (1, 1),
                         wx.EXPAND | borders('r'), 10)
-        self.generations = wx.Slider(props_box, value=0, minValue=1,
+        self.generations = wx.Slider(props_box, value=0, minValue=0,
                                    maxValue=1000, style=wx.SL_LABELS)
         props_sizer.Add(self.generations, (3, 1), (1, 1),
                         wx.EXPAND | borders('r'), 10)
@@ -251,7 +256,7 @@ class SolverControls(wx.Panel):
         tour_len = wx.StaticText(props_box, label='Tour length')
         props_sizer.Add(tour_len, (4, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
-        self.tour_len = wx.Slider(props_box, value=0, minValue=1,
+        self.tour_len = wx.Slider(props_box, value=0, minValue=0,
                                      maxValue=1000, style=wx.SL_LABELS)
         props_sizer.Add(self.tour_len, (5, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
@@ -272,7 +277,10 @@ class SolverControls(wx.Panel):
         self.generations.Bind(wx.EVT_SCROLL_CHANGED, self._on_generations_set)
         self.tour_len.Bind(wx.EVT_SCROLL_CHANGED, self._on_tour_len_set)
 
-        #todo: do i need this?
+
+        # Lilach added
+        #self.show_best.Bind(wx.EVT_CHECKBOX, self._on_view_change)
+        #self.show_current.Bind(wx.EVT_CHECKBOX, self._on_view_change)
         pub.subscribe(self._on_number_of_cities_change, 'NUM_OF_CITIES_CHANGE')
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
         pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
@@ -302,30 +310,29 @@ class SolverControls(wx.Panel):
         set solver and tsp.
         """
 
-        if self.cur_solver == GEN:
-            num_of_days = self.params[self.cur_solver][TOUR_LEN]
-            num_of_cities = self.dset[CITIES]
-            population_size = self.params[self.cur_solver][POP_SIZE]
-            num_of_elite = self.params[self.cur_solver][NUM_ELITE]
-            if num_of_days * num_of_cities < population_size:
-                wx.MessageBox('Population size is too big', 'Error',
+        if not self.running:
+            # Make sure there is loaded instance and selected solver
+            if not self.tsp:
+                wx.MessageBox('No TSP instance loaded.', 'Error',
+                              wx.ICON_ERROR | wx.OK)
+                return
+            if not self.solver:
+                wx.MessageBox('No solver selected.', 'Error',
                               wx.ICON_ERROR | wx.OK)
                 return
 
-            if num_of_days < num_of_elite:
-                wx.MessageBox('Elitisim is too big', 'Error',
-                              wx.ICON_ERROR | wx.OK)
-                return
-
-        # if not self.tsp:
-        #     wx.MessageBox('No TSP instance loaded.', 'Error',
-        #                       wx.ICON_ERROR | wx.OK)
-        #     return
-
-        if not self.solver:
-            wx.MessageBox('No solver selected.', 'Error',
-                              wx.ICON_ERROR | wx.OK)
-            return
+            # Create and start the solver runner
+            self.runner = SolverRunner(self.solver, self.tsp)
+            self.runner.delay = self.delay.GetValue() / 1000
+            self.runner.daemon = True
+            self.runner.start()
+            # Set state to running
+            self._set_running(True)
+        else:
+            # Stop the runner
+            self.runner.stop()
+            # Set state to not running
+            self._set_running(False)
 
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
@@ -347,46 +354,56 @@ class SolverControls(wx.Panel):
     def _on_mutation_rate_set(self, event):
         """Handles setting 'mutation_rate' slider
         """
-        val = event.EventObject.Value
-        self.params[self.cur_solver][MUT_RATE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        if not self.running:
+            return
+
+        self.runner.mutation_rate = self.mutation_rate.GetValue()
 
     def _on_population_size_set(self, event):
         """Handles setting 'population_size' slider
         """
-        val = event.EventObject.Value
-        self.params[self.cur_solver][POP_SIZE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        if not self.running:
+            return
+
+        self.runner.population_size = self.population_size.GetValue()
 
     def _on_elite_size_set(self, event):
         """Handles setting 'elite_size' slider
         """
-        val = event.EventObject.Value
-        self.params[self.cur_solver][NUM_ELITE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        if not self.running:
+            return
+
+        self.runner.num_elite = self.num_elite.GetValue()
 
     def _on_generations_set(self, event):
         """Handles setting number of 'generations' slider
         """
-        val = event.EventObject.Value
-        self.params[self.cur_solver][STEPS] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        if not self.running:
+            return
+
+        self.runner.generations = self.generations.GetValue()
 
     def _on_tour_len_set(self, event):
         """Handles setting 'tour len' slider
         """
-        val = event.EventObject.Value
-        self.params[self.cur_solver][TOUR_LEN] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        if not self.running:
+            return
+
+        self.runner.tour_len = self.tour_len.GetValue()
+
+    def _on_view_change(self, event):
+        """Handles checking or unchecking one of view option checkboxes.
+        """
+
+        options = {}
+        options['show_best'] = self.show_best.GetValue()
+        options['show_current'] = self.show_current.GetValue()
+        pub.sendMessage('VIEW_OPTION_CHANGE', **options)
 
     def _on_number_of_cities_change(self, num_of_cities):
         """Handles solver change event.
         """
+
         self.num_of_cities = num_of_cities
 
     def _on_solver_change(self, solver):
@@ -550,8 +567,7 @@ class TSPView(wx.Panel):
         self.calculate_points()
 
     def _on_tsp_change(self, tsp):
-        """
-        Handles TSP change event.
+        """Handles TSP change event.
         """
 
         self.reset()
@@ -677,6 +693,7 @@ class SolverProperties(wx.propgrid.PropertyGrid):
         # Event bindings
         self.Bind(wxpg.EVT_PG_CHANGED, self._on_changed)
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
+
 
     def _on_changed(self, event):
         """Applies current properties values to the currently set solver.

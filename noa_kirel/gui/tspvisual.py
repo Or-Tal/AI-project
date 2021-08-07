@@ -1,6 +1,8 @@
 import wx
 import wx.adv
 import wx.lib.inspection
+from dataclasses import dataclass
+import numpy as np
 from pubsub import pub
 
 from noa_kirel.gui.export import export_results, export_scr, export_tour
@@ -9,6 +11,35 @@ from noa_kirel.gui.solver_stats import SolverStats
 from noa_kirel.gui.solver_view import SolverView
 #from noa_kirel.gui.tsp_info import TSPInfo
 from noa_kirel.tsp import TSP
+from noa_kirel.partition import partition_1
+from noa_kirel.city_selection import city_selection_1
+from noa_kirel.constants import *
+
+
+@dataclass
+class Representer:
+    coords: dict
+    n_cities: int
+    solver_names: list
+    cur_solver: str
+    params: dict
+    solvers: dict
+    dset: dict
+
+    def get_solver(self):
+        if self.cur_solver == GEN:
+            return self.solvers[GEN](self.dset[CITIES],
+                                     self.params[POP_SIZE],
+                                     self.params[TOUR_LEN],
+                                     partition_1,
+                                     city_selection_1,
+                                     np.inf,
+                                     self.params[STEPS],
+                                     self.params[MUT_RATE],
+                                     self.params[NUM_ELITE],
+                                     self.dset[COSTS], self.dset[REV])
+        return self.solvers[self.cur_solver](self.dset[CITIES], self.dset[COSTS], self.dset[REV], self.params[TOUR_LEN])
+
 
 
 class TSPVisual(wx.Frame):
@@ -24,7 +55,8 @@ class TSPVisual(wx.Frame):
         # Solver results (for exporting)
         self._results = None
         # Current TSP instance
-        self._tsp = None
+        self._tsp = Representer(coords=dict(), n_cities=1, solver_names=[BF_SOL, GREEDY, GEN], cur_solver=GREEDY,
+                                dset=load_dset("./datasets/3_cities.npy"),)
 
         # GUI
         self._init_ui()

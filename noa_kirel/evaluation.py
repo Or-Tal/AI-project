@@ -33,16 +33,18 @@ def run_hyperparams(cur_dset_paths,
         if cur_tour_lengths is None:
             cur_tour_lengths = np.linspace(3, num_cities, num_cities // 3, dtype=int)
 
-        for population_size in cur_population_sizes:
+        for i1, population_size in enumerate(cur_population_sizes):
             if cur_elitism_factors is None:
                 cur_elitism_factors = [1, 3] if population_size % 2 == 1 else [2]
-            for elitism_factor in cur_elitism_factors:
+            for i2, elitism_factor in enumerate(cur_elitism_factors):
                 if population_size <= elitism_factor:
                     continue
-                for p in cur_p_mutations:
-                    for steps_threshold in cur_steps_thresholds:
-                        for score_threshold in cur_score_thresholds:
+                for i3, p in enumerate(cur_p_mutations):
+                    for i4, steps_threshold in enumerate(cur_steps_thresholds):
+                        for i5, score_threshold in enumerate(cur_score_thresholds):
                             for algorithm in cur_algorithms:
+                                if algorithm != GEN and (i1 != 0 or i2 != 0 or i3 != 0 or i4 != 0 or i5 != 0):
+                                    continue
                                 for length in cur_tour_lengths:
                                     save_name = f"{f'{prefix}/' if prefix is not None else ''}num_cities_" \
                                                 f"{num_cities}_p_{p}_population_{population_size}_" \

@@ -39,7 +39,7 @@ def check_args(a, dset):
 def get_solver(a, dset):
     if a.algorithm == GREEDY:
         return GreedySolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
-    elif a.algorithm == OPT:
+    elif a.algorithm == BF_SOL:
         return BruteForceSolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
