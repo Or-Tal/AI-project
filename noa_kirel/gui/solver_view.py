@@ -28,7 +28,8 @@ class SolverView(wx.Panel):
         self._init_ui()
 
     def _init_ui(self):
-        """Builds GUI.
+        """
+        Builds GUI.
         """
 
         # Panel sizer
@@ -56,7 +57,7 @@ class SolverControls(wx.Panel):
 
     def get_solver(self, solver_name, dset: dict, params: dict):
         if solver_name == GEN:
-            return self.solvers[solver_name](dset[CITIES],
+            ret = self.solvers[solver_name](dset[CITIES],
                                              params[POP_SIZE],
                                              params[TOUR_LEN],
                                              partition_1,
@@ -66,7 +67,9 @@ class SolverControls(wx.Panel):
                                              params[MUT_RATE],
                                              params[NUM_ELITE],
                                              dset[COSTS], dset[REV])
-        return self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
+        else:
+            ret = self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
+        return ret
 
     def __init__(self, parent):
         super(SolverControls, self).__init__(parent)
@@ -91,7 +94,20 @@ class SolverControls(wx.Panel):
         self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
         self.tsp = None
 
+        # Current `SolverRunner`
+        self.runner = None
+        # Whether ther is currently running solver
+        self.running = False
+
+        self.best_sol = None
+        self.best_score = np.NINF
+        self.cur_sol = None
+        self.cur_score = np.NINF
+
         self._init_ui()
+
+    def get_cur_solver(self):
+        return self.get_solver(self.cur_solver, self.dset, self.params[self.cur_solver])
 
     def _init_ui(self):
         """Builds GUI.
@@ -311,6 +327,25 @@ class SolverControls(wx.Panel):
             if num_of_days < num_of_elite:
                 wx.MessageBox('Elitisim is too big', 'Error',wx.ICON_ERROR | wx.OK)
                 return
+        # TODO LILACH - add support for BF and Greedy for tour length valid check
+
+        if not self.running:
+
+            # Create and start the solver runner
+            self.runner = SolverRunner(self.get_cur_solver())
+
+            # TODO check that delay slider is connected
+            self.runner.delay = self.delay.GetValue() / 1000
+            self.runner.daemon = True
+            self.runner.start()
+            # Set state to running
+            self._set_running(True)
+        else:
+            # Stop the runner
+            self.runner.stop()
+            # Set state to not running
+            self._set_running(False)
+
 
 
 
@@ -403,23 +438,21 @@ class SolverControls(wx.Panel):
         :param SolverState state: New solver state.
         """
 
-        # if not state:
-        #     return
+        if not state:
+            return
 
-        if state.progress:
-            self.progress.SetValue(state.progress * 100)
+        if state[-1]:
+            self.progress.SetValue(state[-1] * 100)
 
-        if state.best:
-            result = state.best.distance
-            self.result.SetLabel(str(result))
+        self.cur_sol = state[0]
+        self.cur_score = state[1]
 
-            if self.tsp.opt_path:
-                opt = self.tsp.opt_path.distance
-                error = round((result - opt) / opt * 100, 2)
-                #self.error.SetLabel(str(error) + '%')
+        if state[1] > self.best_score:
+            self.best_sol = state[0]
+            self.best_score = state[1]
 
         # If this is final result
-        if state.final:
+        if state[-1] == 1:
             # Set state to not running
             self._set_running(False)
 
@@ -479,6 +512,7 @@ class TSPView(wx.Panel):
         # Cities list
         self._tsp = None
         self._points = self.gen_coords()
+        # self._points = None
         # Solver state
         self._state = None
         # Whether to show the best path
@@ -499,8 +533,8 @@ class TSPView(wx.Panel):
         # Event bindings
         self.Bind(wx.EVT_PAINT, self._on_paint)
         self.Bind(wx.EVT_SIZE, self._on_resize)
-        pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
         pub.subscribe(self._on_solver_state_change, 'SOLVER_STATE_CHANGE')
+        pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
         pub.subscribe(self._on_view_option_change, 'VIEW_OPTION_CHANGE')
 
     def _on_paint(self, event):
@@ -511,6 +545,9 @@ class TSPView(wx.Panel):
         dc = wx.AutoBufferedPaintDC(self)
         dc.Clear()
 
+        # Skip if there are no points
+        if not self._points:
+            return
 
         # Draw state if it's defined
         if self._state:
@@ -532,7 +569,7 @@ class TSPView(wx.Panel):
         # Draw cities
         dc.SetPen(wx.Pen(self.CITY_COLOR))
         dc.SetBrush(wx.Brush(self.CITY_COLOR))
-        for c in self._points:
+        for c in self._points.values():
             dc.DrawCircle(c[0], c[1], self.CITY_RADIUS)
 
     def _draw_path(self, dc, path, color):

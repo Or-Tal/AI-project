@@ -122,6 +122,7 @@ class GeneticSolver(Solver):
             best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
             population = new_population
+            # TODO add progress
             yield best_solution, best_score, time() - start
 
         return best_solution, best_score, time() - start
