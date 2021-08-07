@@ -16,11 +16,6 @@ from noa_kirel.city_selection import city_selection_1
 from noa_kirel.constants import *
 
 
-
-
-
-
-
 class TSPVisual(wx.Frame):
     """
     Main app window wrapping around everything else.

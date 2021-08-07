@@ -312,6 +312,9 @@ class SolverControls(wx.Panel):
                 wx.MessageBox('Elitisim is too big', 'Error',wx.ICON_ERROR | wx.OK)
                 return
 
+
+
+
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
         """
@@ -372,7 +375,6 @@ class SolverControls(wx.Panel):
     def _on_view_change(self, event):
         """Handles checking or unchecking one of view option checkboxes.
         """
-
         options = {}
         pub.sendMessage('VIEW_OPTION_CHANGE', **options)
 
