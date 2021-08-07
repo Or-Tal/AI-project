@@ -14,6 +14,8 @@ TOUR_LEN = "tour_length"
 STEPS = "generations"
 MUT_RATE = "mutate_rate"
 NUM_ELITE = "elitism_factor"
+NUM_OF_CITIES = ["3", "6", "9", "12", "15", "50", "60",
+                                     "70", "80", "90", "100"]
 
 def load_dset(path):
     return np.load(path, allow_pickle=True).tolist()
