@@ -19,9 +19,10 @@ def partition_2(n):
     :param n: length of a solution
     :return: a binary 1d-array representing which indices to take from the first solution to the crossover solution
     """
-    num_indices_to_flip = np.random.randint(n)
-    indices_to_flip = np.random.choice(np.arange(n), size=num_indices_to_flip)
-    indices = np.ones(n, dtype=int)
-    indices[indices_to_flip] = 0
-    return indices
+    # num_indices_to_flip = np.random.randint(n)
+    # indices_to_flip = np.random.choice(np.arange(n), size=num_indices_to_flip)
+    # indices = np.ones(n, dtype=int)
+    # indices[indices_to_flip] = 0
+    indices = sorted(np.random.randint(0, n, 2))
+    return np.arange(indices[1], indices[0]), np.concatenate([np.arange(indices[1]), np.arange(indices[0], n)])
 
