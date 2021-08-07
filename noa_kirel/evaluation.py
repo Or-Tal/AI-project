@@ -72,8 +72,8 @@ if __name__ == '__main__':
     large_tour_lengths = [30, 50]
     large_elitism_factors = [20, 30]
 
-    run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
+    # run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
+    #                 score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
                     score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,

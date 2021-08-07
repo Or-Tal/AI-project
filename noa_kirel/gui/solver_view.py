@@ -425,8 +425,8 @@ class SolverControls(wx.Panel):
         :param SolverState state: New solver state.
         """
 
-        if not state:
-            return
+        # if not state:
+        #     return
 
         if state.progress:
             self.progress.SetValue(state.progress * 100)
@@ -484,12 +484,23 @@ class TSPView(wx.Panel):
     OPT_COLOR = 'light gray'
     PATH_WIDTH = 2
 
+    def gen_coords(self):
+        n_cities = self.Parent.Parent.controls.dset[CITIES]
+        seen = set()
+        def get_coord():
+            coord = (np.random.randint(0, 101), np.random.randint(0, 101))
+            while coord in seen:
+                coord = (np.random.randint(0, 101), np.random.randint(0, 101))
+            seen.add(coord)
+            return coord
+        return {i: get_coord() for i in range(n_cities)}
+
     def __init__(self, parent):
         super(TSPView, self).__init__(parent)
 
         # Cities list
         self._tsp = None
-        self._points = []
+        self._points = self.gen_coords()
         # Solver state
         self._state = None
         # Whether to show the best path
@@ -500,6 +511,7 @@ class TSPView(wx.Panel):
 
         # GUI
         self._init_ui()
+
 
     def _init_ui(self):
         """Builds GUI.
@@ -523,9 +535,6 @@ class TSPView(wx.Panel):
         dc = wx.AutoBufferedPaintDC(self)
         dc.Clear()
 
-        # Skip if there are no points
-        if not self._points:
-            return
 
         # Draw state if it's defined
         if self._state:
