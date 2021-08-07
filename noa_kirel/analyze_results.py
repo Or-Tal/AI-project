@@ -16,7 +16,7 @@ COLS_SMALL_CITY = ["num_cities", "tour_length", "population_size", "elitism_fact
 
 def is_interesting(filename):
     split_path = filename.split('_')
-    algorithm = split_path[-3]
+    algorithm = split_path[7]
     return filename != ANALYZE_LARGE_PATH and filename != ANALYZE_SMALL_PATH \
            and filename[-3:] == 'csv' and algorithm == GEN
 
@@ -60,13 +60,17 @@ def parse_csv(csv_path, small_cities=False):
                "greedy_time_achieved": [greedy_time_achieved]}
 
     if small_cities:
-        split_path[7] = BF_SOL
-        bf_csv_path = '_'.join(split_path)
-        bf_df = pd.read_csv(bf_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
-        bf_max_value = bf_df['scores'].iloc[-1]
-        bf_time_achieved = bf_df['times'].iloc[-1]
-        df_dict["bf_max_score"] = [bf_max_value]
-        df_dict["bf_time_achieved"] = [bf_time_achieved]
+        try:
+            split_path[7] = "bruteForce"
+            bf_csv_path = '_'.join(split_path)
+            bf_df = pd.read_csv(bf_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+            bf_max_value = bf_df['scores'].iloc[-1]
+            bf_time_achieved = bf_df['times'].iloc[-1]
+            df_dict["bf_max_score"] = [bf_max_value]
+            df_dict["bf_time_achieved"] = [bf_time_achieved]
+        except FileNotFoundError:
+            df_dict["bf_max_score"] = [pd.NA]
+            df_dict["bf_time_achieved"] = [pd.NA]
 
     cols = COLS_SMALL_CITY if small_cities else COLS_LARGE_CITY
     analyzed_df = pd.DataFrame(df_dict)[cols]
@@ -83,7 +87,7 @@ def analyze_large_dataset():
 
 
 def analyze_small_dataset():
-    files = get_csvs("results/small")
+    files = get_csvs('results/small')
     all_concatenated = pd.concat([parse_csv(f"results/small/{file}", small_cities=True) for file in files])
     all_concatenated = all_concatenated.sort_values(by=['num_cities', 'population_size',
                                                         'elitism_factor', 'p_mutant'])
@@ -92,6 +96,6 @@ def analyze_small_dataset():
 
 if __name__ == '__main__':
     analyze_small_dataset()
-    analyze_large_dataset()
+    # analyze_large_dataset()
 
 
