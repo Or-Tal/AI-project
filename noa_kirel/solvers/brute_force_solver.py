@@ -41,7 +41,7 @@ class BruteForceSolver(Solver):
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
-
+            # TODO add progress
             yield best_sol, best_score, time() - start_time
 
         return best_sol, best_score, time() - start_time

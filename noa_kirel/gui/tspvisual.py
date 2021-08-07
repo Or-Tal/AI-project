@@ -26,7 +26,6 @@ class TSPVisual(wx.Frame):
     Main app window wrapping around everything else.
     """
 
-
     def __init__(self, file=None):
         super(TSPVisual, self).__init__(None, title='TSP Visual')
 
@@ -51,8 +50,6 @@ class TSPVisual(wx.Frame):
         # Main layout
         self.panel = panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
-
-
 
         # Tabs
         notebook = wx.Notebook(panel)

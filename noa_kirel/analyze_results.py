@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from noa_kirel.constants import *
+from fix_brute_force_script import fix
 
 ANALYZE_SMALL_PATH = "analyzed_small_results.csv"
 ANALYZE_LARGE_PATH = "analyzed_large_results.csv"
@@ -15,10 +16,11 @@ COLS_SMALL_CITY = ["num_cities", "tour_length", "population_size", "elitism_fact
 
 
 def is_interesting(filename):
+    if filename == ANALYZE_SMALL_PATH or filename == ANALYZE_LARGE_PATH:
+        return False
     split_path = filename.split('_')
     algorithm = split_path[7]
-    return filename != ANALYZE_LARGE_PATH and filename != ANALYZE_SMALL_PATH \
-           and filename[-3:] == 'csv' and algorithm == GEN
+    return filename[-3:] == 'csv' and algorithm == GEN
 
 
 def get_csvs(dir_path):
@@ -44,9 +46,13 @@ def parse_csv(csv_path, small_cities=False):
 
     split_path[7] = GREEDY
     greedy_csv_path = '_'.join(split_path)
-    greedy_df = pd.read_csv(greedy_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
-    greedy_max_value = greedy_df['scores'].iloc[-1]
-    greedy_time_achieved = greedy_df['times'].iloc[-1]
+    try:
+        greedy_df = pd.read_csv(greedy_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+        greedy_max_value = greedy_df['scores'].iloc[-1]
+        greedy_time_achieved = greedy_df['times'].iloc[-1]
+    except FileNotFoundError:
+        greedy_max_value = pd.NA
+        greedy_time_achieved = pd.NA
 
     df_dict = {"num_cities": [num_cities],
                "tour_length": [tour_length],
@@ -95,7 +101,8 @@ def analyze_small_dataset():
 
 
 if __name__ == '__main__':
-    analyze_small_dataset()
-    # analyze_large_dataset()
+    # fix("results/small")
+    # analyze_small_dataset()
+    analyze_large_dataset()
 
 

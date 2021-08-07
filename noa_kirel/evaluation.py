@@ -31,7 +31,8 @@ def run_hyperparams(cur_dset_paths,
         new_path = f"./datasets/{path}"
         num_cities = int(path.split(sep='_')[0])
         if cur_tour_lengths is None:
-            cur_tour_lengths = np.linspace(3, num_cities, num_cities // 3, dtype=int)
+            cur_tour_lengths = [3, 6]
+            # cur_tour_lengths = np.linspace(3, num_cities, num_cities // 3, dtype=int)
 
         for i1, population_size in enumerate(cur_population_sizes):
             if cur_elitism_factors is None:
@@ -59,7 +60,7 @@ def run_hyperparams(cur_dset_paths,
 
 
 if __name__ == '__main__':
-    small_dset_paths = ["9_cities.npy", "12_cities.npy"]
+    small_dset_paths = ["9_cities.npy", "12_cities.npy", "15_cities.npy"]
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
                         "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
                         "400_cities.npy", "500_cities.npy"]
@@ -72,10 +73,10 @@ if __name__ == '__main__':
     large_tour_lengths = [30, 50]
     large_elitism_factors = [20, 30]
 
-    # run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-    #                 score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
+    run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
+                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
 
-    run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
-                    large_elitism_factors, prefix="large")
+    # run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
+    #                 score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
+    #                 large_elitism_factors, prefix="large")
 
