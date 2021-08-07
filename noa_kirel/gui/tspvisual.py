@@ -26,7 +26,6 @@ class TSPVisual(wx.Frame):
     Main app window wrapping around everything else.
     """
 
-    DEFAULT_TITLE = 'No instance loaded'
 
     def __init__(self, file=None):
         super(TSPVisual, self).__init__(None, title='TSP Visual')
@@ -49,42 +48,11 @@ class TSPVisual(wx.Frame):
         """Builds GUI.
         """
 
-        # Menubar
-        menu_bar = wx.MenuBar()
-        file_menu = wx.Menu()
-        open_mi = file_menu.Append(wx.ID_OPEN, 'Open', 'Open instance.')
-        close_mi = file_menu.Append(wx.ID_CLOSE, 'Close', 'Close instance.')
-        file_menu.AppendSeparator()
-        exit_mi = file_menu.Append(wx.ID_EXIT, 'Exit', 'Exit application.')
-        export_menu = wx.Menu()
-        export_data_mi = export_menu.Append(
-            wx.ID_ANY, 'Solver data', 'Export current solver data.')
-        self.export_b_graph_mi = export_menu.Append(
-            wx.ID_ANY, 'Best graph', 'Export best graph.')
-        self.export_c_graph_mi = export_menu.Append(
-            wx.ID_ANY, 'Current graph', 'Export current graph.')
-        self.export_vis = export_menu.Append(
-            wx.ID_ANY, 'Visualisation', 'Export screenshot of visualisation')
-        self.export_tour = export_menu.Append(
-            wx.ID_ANY, 'Tour',
-            'Export the best tour found during the last solver run.')
-        help_menu = wx.Menu()
-        about_mi = help_menu.Append(wx.ID_ANY, 'About', 'About this program.')
-        menu_bar.Append(file_menu, 'File')
-        menu_bar.Append(export_menu, 'Export')
-        menu_bar.Append(help_menu, 'Help')
-        self.SetMenuBar(menu_bar)
-
         # Main layout
         self.panel = panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        # Title
-        self.title = wx.StaticText(panel, label=self.DEFAULT_TITLE)
-        self.title_font = wx.Font(wx.FontInfo(18))
-        self.title.SetFont(self.title_font)
-        self.title.SetMinSize(self.title.GetTextExtent(self.title.Label))
-        sizer.Add(self.title, 0, wx.EXPAND | wx.ALL, 10)
+
 
         # Tabs
         notebook = wx.Notebook(panel)
@@ -101,15 +69,6 @@ class TSPVisual(wx.Frame):
         self.Layout()
 
         # Event bindings
-        self.Bind(wx.EVT_MENU, self._on_open, open_mi)
-        self.Bind(wx.EVT_MENU, self._on_close, close_mi)
-        self.Bind(wx.EVT_MENU, lambda e: self.Close(), exit_mi)
-        self.Bind(wx.EVT_MENU, self._on_data_export, export_data_mi)
-        self.Bind(wx.EVT_MENU, self._on_graph_export, self.export_b_graph_mi)
-        self.Bind(wx.EVT_MENU, self._on_graph_export, self.export_c_graph_mi)
-        self.Bind(wx.EVT_MENU, self._on_vis_export, self.export_vis)
-        self.Bind(wx.EVT_MENU, self._on_tour_export, self.export_tour)
-        self.Bind(wx.EVT_MENU, self._on_about, about_mi)
         pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
         pub.subscribe(self._on_solver_state_end, 'SOLVER_STATE_END')
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
