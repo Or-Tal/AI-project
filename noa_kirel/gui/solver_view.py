@@ -1,6 +1,7 @@
 from operator import itemgetter
 
 import wx
+import wx.lib.agw.floatspin as Fs
 import wx.propgrid as wxpg
 from pubsub import pub
 
@@ -113,7 +114,7 @@ class SolverControls(wx.Panel):
         # Properties box
         props_box = wx.StaticBox(self, label='Solver Properties')
         props_box_sizer = wx.StaticBoxSizer(props_box)
-        sizer.Add(props_box_sizer, 1, wx.EXPAND)
+        sizer.Add(props_box_sizer, 0, wx.EXPAND)
 
         # Properties box contents
         props_sizer = wx.GridBagSizer(10, 10)
@@ -124,60 +125,58 @@ class SolverControls(wx.Panel):
         # Solver selection
         solver_select_label = wx.StaticText(solver_box,
                                             label='Solver selection')
-        solver_sizer.Add(solver_select_label, (0, 0), (1, 2),
+        solver_sizer.Add(solver_select_label, (0, 0), (1, 1),
                          wx.EXPAND | borders('trl'), 10)
         self.solver_select = wx.Choice(solver_box, choices=self.solver_names)
         self.solver_select.SetSelection(0)
-        solver_sizer.Add(self.solver_select, (1, 0), (1, 2),
+        solver_sizer.Add(self.solver_select, (1, 0), (1, 1),
                          wx.EXPAND | borders('rl'), 10)
 
         # Cities selection
-        # Lilach added
         cities_select_label = wx.StaticText(solver_box,
                                             label='Cities selection')
-        solver_sizer.Add(cities_select_label, (2, 0), (1, 2),
+        solver_sizer.Add(cities_select_label, (0, 1), (1, 1),
                          wx.EXPAND | borders('trl'), 10)
         self.cities_select = wx.Choice(solver_box, choices=self.num_of_cities)
         self.cities_select.SetSelection(0)
-        solver_sizer.Add(self.cities_select, (3, 0), (1, 2),
+        solver_sizer.Add(self.cities_select, (1, 1), (1, 1),
                          wx.EXPAND | borders('rl'), 10)
 
         # Delay setting
-        mutation_rate = wx.StaticText(solver_box, label='Delay [ms]')
-        solver_sizer.Add(mutation_rate, (4, 0), (1, 2),
+        delay_label = wx.StaticText(solver_box, label='Delay [ms]')
+        solver_sizer.Add(delay_label, (2, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-        self.mutation_rate = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
+        self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
                                        style=wx.SL_LABELS)
-        solver_sizer.Add(self.mutation_rate, (5, 0), (1, 2),
+        solver_sizer.Add(self.delay, (3, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
 
-
-        # Show best path checkbox
-        self.show_best = wx.CheckBox(solver_box,
-                                     label='Show the best found path')
-        self.show_best.SetValue(True)
-        solver_sizer.Add(self.show_best, (6, 0), (1, 2),
-                         wx.EXPAND | borders('rl'), 10)
-        # Show current path checkbox
-        self.show_current = wx.CheckBox(solver_box,
-                                        label='Show current working path')
-        self.show_current.SetValue(True)
-        solver_sizer.Add(self.show_current, (7, 0), (1, 2),
-                         wx.EXPAND | borders('rl'), 10)
+        #Show best path checkbox
+        # self.show_best = wx.CheckBox(solver_box,
+        #                              label='Show the best found path')
+        # self.show_best.SetValue(True)
+        # solver_sizer.Add(self.show_best, (4, 0), (1, 2),
+        #                  wx.EXPAND | borders('rl'), 10)
+        # #Show current path checkbox
+        # self.show_current = wx.CheckBox(solver_box,
+        #                                 label='Show current working path')
+        # self.show_current.SetValue(True)
+        # solver_sizer.Add(self.show_current, (5, 0), (1, 2),
+        #                  wx.EXPAND | borders('rl'), 10)
 
         # Solve button
         self.solve_button = wx.Button(solver_box,
                                       label=self.SOLVE_BTN_INACTIVE)
-        solver_sizer.Add(self.solve_button, (8, 0), (1, 1),
+        solver_sizer.Add(self.solve_button, (4, 0), (1, 1),
                          wx.EXPAND | borders('l'), 10)
         # Reset button
         self.reset_button = wx.Button(solver_box, label='Reset')
-        solver_sizer.Add(self.reset_button, (8, 1), (1, 1),
+        solver_sizer.Add(self.reset_button, (4, 1), (1, 1),
                          wx.EXPAND | borders('r'), 10)
         # Progress bar
         self.progress = wx.Gauge(solver_box, range=100)
         # self.progress.SetMaxSize((-1, 10))
-        solver_sizer.Add(self.progress, (9, 0), (1, 2),
+        solver_sizer.Add(self.progress, (5, 0), (1, 2),
                          wx.EXPAND | borders('rbl'), 10)
         solver_box_sizer.Add(solver_sizer)
 
@@ -186,37 +185,81 @@ class SolverControls(wx.Panel):
         # way to avoid GTK warnings
         result_panel = wx.Panel(self)
         result_sizer = wx.GridBagSizer(10, 10)
-        result_font = wx.Font(wx.FontInfo(16))
+        result_font = wx.Font(wx.FontInfo(10))
         # Score
         result_label = wx.StaticText(result_panel, label='Score:')
-        result_sizer.Add(result_label, (0, 0), (0, 1),
+        result_sizer.Add(result_label, (0, 0), (0, 0),
                          wx.ALIGN_CENTER_VERTICAL | borders('tl'), 10)
         self.result = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
         self.result.SetFont(result_font)
-        result_sizer.Add(self.result, (0, 1), (0, 1),
+        result_sizer.Add(self.result, (0, 1), (0, 0),
                          wx.ALIGN_CENTER_VERTICAL | borders('tr'), 10)
 
         result_panel.SetSizer(result_sizer)
         res_box_sizer.Add(result_panel, 1)
 
+        # Error
+        # error_label = wx.StaticText(result_panel, label='Error:')
+        # result_sizer.Add(error_label, (1, 0), (0, 1),
+        #                  wx.ALIGN_CENTER_VERTICAL | borders('bl'), 10)
+        self.error = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
+        # self.error.SetFont(result_font)
+        # result_sizer.Add(self.error, (1, 1), (0, 1),
+        #                  wx.ALIGN_CENTER_VERTICAL | borders('br'), 10)
+        # result_panel.SetSizer(result_sizer)
+        # res_box_sizer.Add(result_panel, 1)
 
-        # Properties box contents
-
-        # Lilach added
         # mutation setting
         mutation_rate = wx.StaticText(props_box, label='Mutation rate')
-        props_sizer.Add(mutation_rate, (1, 0), (1, 2),
-                         wx.EXPAND | borders('rl'), 10)
-        self.mutation_rate = wx.Slider(props_box, value=0, minValue=0, maxValue=1000,
+        props_sizer.Add(mutation_rate, (0, 0), (1, 1),
+                         wx.EXPAND | borders('l'), 10)
+        self.mutation_rate = Fs.FloatSpin(props_box, value=0, min_val=0,
+                        increment=0.01, max_val=1, style=wx.SL_LABELS)
+        self.mutation_rate.SetDigits(digits=2)
+
+
+        props_sizer.Add(self.mutation_rate, (1, 0), (1, 1),
+                         wx.EXPAND | borders('l'), 10)
+
+        # population size
+        population_size = wx.StaticText(props_box, label='Population size')
+        props_sizer.Add(population_size, (0, 1), (1, 1),
+                        wx.EXPAND | borders('r'), 10)
+        self.population_size = wx.Slider(props_box, value=0, minValue=0,
+                                       maxValue=1000,
                                        style=wx.SL_LABELS)
-        props_sizer.Add(self.mutation_rate, (2, 0), (1, 2),
-                             wx.EXPAND | borders('rl'), 10)
+        props_sizer.Add(self.population_size, (1, 1), (1, 1),
+                        wx.EXPAND | borders('r'), 10)
 
-        self.solver_properties = SolverProperties(self)
+        # num elite
+        num_elite = wx.StaticText(props_box, label='Num elite')
+        props_sizer.Add(num_elite, (2, 0), (1, 1),
+                        wx.EXPAND | borders('l'), 10)
+        self.num_elite = wx.Slider(props_box, value=0, minValue=0,
+                                         maxValue=1000,
+                                         style=wx.SL_LABELS)
+        props_sizer.Add(self.num_elite, (3, 0), (1, 1),
+                        wx.EXPAND | borders('l'), 10)
 
-        # todo: change 0 to 1
-        props_box_sizer.Add(self.solver_properties, 0, wx.EXPAND | wx.ALL, 10)
+        # num generations
+        generations = wx.StaticText(props_box, label='Generations')
+        props_sizer.Add(generations, (2, 1), (1, 1),
+                        wx.EXPAND | borders('r'), 10)
+        self.generations = wx.Slider(props_box, value=0, minValue=0,
+                                   maxValue=1000, style=wx.SL_LABELS)
+        props_sizer.Add(self.generations, (3, 1), (1, 1),
+                        wx.EXPAND | borders('r'), 10)
 
+        # tour len
+        tour_len = wx.StaticText(props_box, label='Tour length')
+        props_sizer.Add(tour_len, (4, 0), (1, 1),
+                        wx.EXPAND | borders('l'), 10)
+        self.tour_len = wx.Slider(props_box, value=0, minValue=0,
+                                     maxValue=1000, style=wx.SL_LABELS)
+        props_sizer.Add(self.tour_len, (5, 0), (1, 1),
+                        wx.EXPAND | borders('l'), 10)
+
+        props_box_sizer.Add(props_sizer)
         self.SetSizer(sizer)
 
         # Event bindings
@@ -224,11 +267,18 @@ class SolverControls(wx.Panel):
         self.solver_select.Bind(wx.EVT_CHOICE, self._on_select_solver)
         self.solve_button.Bind(wx.EVT_BUTTON, self._on_solve)
         self.reset_button.Bind(wx.EVT_BUTTON, self._on_reset)
-        self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
+        self.delay.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
+        self.mutation_rate.Bind(Fs.EVT_FLOATSPIN, self._on_mutation_rate_set)
+        self.population_size.Bind(wx.EVT_SCROLL_CHANGED,
+                                  self._on_population_size_set)
+        self.num_elite.Bind(wx.EVT_SCROLL_CHANGED, self._on_elite_size_set)
+        self.generations.Bind(wx.EVT_SCROLL_CHANGED, self._on_generations_set)
+        self.tour_len.Bind(wx.EVT_SCROLL_CHANGED, self._on_tour_len_set)
+
+
         # Lilach added
-        self.mutation_rate.Bind(wx.EVT_SCROLL_CHANGED, self._on_delay_set)
-        self.show_best.Bind(wx.EVT_CHECKBOX, self._on_view_change)
-        self.show_current.Bind(wx.EVT_CHECKBOX, self._on_view_change)
+        #self.show_best.Bind(wx.EVT_CHECKBOX, self._on_view_change)
+        #self.show_current.Bind(wx.EVT_CHECKBOX, self._on_view_change)
         pub.subscribe(self._on_number_of_cities_change, 'NUM_OF_CITIES_CHANGE')
         pub.subscribe(self._on_solver_change, 'SOLVER_CHANGE')
         pub.subscribe(self._on_tsp_change, 'TSP_CHANGE')
@@ -246,7 +296,6 @@ class SolverControls(wx.Panel):
         self.cur_solver = solver_name
         pub.sendMessage('SOLVER_CHANGE', solver=solver_name)
 
-    # Lilach added
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
@@ -272,7 +321,7 @@ class SolverControls(wx.Panel):
 
             # Create and start the solver runner
             self.runner = SolverRunner(self.solver, self.tsp)
-            self.runner.delay = self.mutation_rate.GetValue() / 1000
+            self.runner.delay = self.delay.GetValue() / 1000
             self.runner.daemon = True
             self.runner.start()
             # Set state to running
@@ -298,7 +347,47 @@ class SolverControls(wx.Panel):
         if not self.running:
             return
 
-        self.runner.mutation_rate = self.mutation_rate.GetValue() / 1000
+        self.runner.delay = self.delay.GetValue() / 1000
+
+    def _on_mutation_rate_set(self, event):
+        """Handles setting 'mutation_rate' slider
+        """
+        if not self.running:
+            return
+
+        self.runner.mutation_rate = self.mutation_rate.GetValue()
+
+    def _on_population_size_set(self, event):
+        """Handles setting 'population_size' slider
+        """
+        if not self.running:
+            return
+
+        self.runner.population_size = self.population_size.GetValue()
+
+    def _on_elite_size_set(self, event):
+        """Handles setting 'elite_size' slider
+        """
+        if not self.running:
+            return
+
+        self.runner.num_elite = self.num_elite.GetValue()
+
+    def _on_generations_set(self, event):
+        """Handles setting number of 'generations' slider
+        """
+        if not self.running:
+            return
+
+        self.runner.generations = self.generations.GetValue()
+
+    def _on_tour_len_set(self, event):
+        """Handles setting 'tour len' slider
+        """
+        if not self.running:
+            return
+
+        self.runner.tour_len = self.tour_len.GetValue()
 
     def _on_view_change(self, event):
         """Handles checking or unchecking one of view option checkboxes.
@@ -307,9 +396,6 @@ class SolverControls(wx.Panel):
         options = {}
         options['show_best'] = self.show_best.GetValue()
         options['show_current'] = self.show_current.GetValue()
-        # Lilach removed
-        # options['show_opt'] = self.show_opt.GetValue()
-
         pub.sendMessage('VIEW_OPTION_CHANGE', **options)
 
     def _on_number_of_cities_change(self, num_of_cities):
@@ -441,11 +527,6 @@ class TSPView(wx.Panel):
         if not self._points:
             return
 
-        # Draw the optimal path
-        # Lilach removed
-        # if self.show_opt and self._tsp.opt_path:
-        #     self._draw_path(dc, self._tsp.opt_path, self.OPT_COLOR)
-
         # Draw state if it's defined
         if self._state:
             # Draw current path if there's no best even if it's disabled
@@ -518,10 +599,6 @@ class TSPView(wx.Panel):
 
         if show_current is not None:
             self.show_current = show_current
-
-        # Lilach removed
-        # if show_best is not None:
-        #     self.show_opt = show_opt
 
         self.Refresh()
 

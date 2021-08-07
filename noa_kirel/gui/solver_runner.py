@@ -23,12 +23,15 @@ class SolverRunner(threading.Thread):
 
         #Lilach added
         self.mutation_rate = 0
-        self.num_elite = 0
         self.population_size = 0
+        self.num_elite = 0
         self.generations = 0
+        self.tour_len = 0
 
         # Results queue
         self._queue = multiprocessing.Queue()
+
+
 
         # Results list
         self.results = []
