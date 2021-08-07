@@ -4,13 +4,13 @@ import wx
 import wx.propgrid as wxpg
 from pubsub import pub
 
-from gui.helpers import borders
-from gui.solver_runner import SolverRunner
-from solver import Solver
-from solvers import greedy_solver, brute_force_solver, genetic_solver
-from constants import *
-from partition import partition_1
-from city_selection import city_selection_1
+from noa_kirel.gui.helpers import borders
+from noa_kirel.gui.solver_runner import SolverRunner
+from noa_kirel.solver import Solver
+from noa_kirel.solvers import greedy_solver, brute_force_solver, genetic_solver
+from noa_kirel.constants import *
+from noa_kirel.partition import partition_1
+from noa_kirel.city_selection import city_selection_1
 import os
 
 #from solvers import *  # noqa: F403, F401
@@ -399,6 +399,8 @@ class TSPView(wx.Panel):
     def __init__(self, parent):
         super(TSPView, self).__init__(parent)
 
+        #
+
         # Cities list
         self._tsp = None
         self._points = []
@@ -532,7 +534,8 @@ class TSPView(wx.Panel):
 
     @tsp.setter
     def tsp(self, tsp):
-        """Sets tsp instance, triggers point calculation and repaint.
+        """
+        Sets tsp instance, triggers point calculation and repaint.
         """
 
         self._tsp = tsp
@@ -547,7 +550,8 @@ class TSPView(wx.Panel):
         self.Refresh()
 
     def calculate_points(self):
-        """Calculates positions of points representing cities.
+        """
+        Calculates positions of points representing cities.
         """
 
         # Skip if no cities are set
@@ -580,7 +584,8 @@ class TSPView(wx.Panel):
             self._points.append((x, y))
 
     def reset(self):
-        """Resets this control to its initial empty state.
+        """
+        Resets this control to its initial empty state.
         """
 
         self._cities = []

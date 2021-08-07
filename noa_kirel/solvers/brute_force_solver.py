@@ -1,6 +1,6 @@
 import numpy as np
 from noa_kirel.solver import Solver
-from itertools import permutations
+from itertools import combinations_with_replacement
 from noa_kirel.constants import BF_SOL
 from time import time
 
@@ -32,7 +32,7 @@ class BruteForceSolver(Solver):
         start_time = time()
         best_score = np.NINF
         best_sol = None
-        for sol in permutations(self.cities, r=self.n):
+        for sol in combinations_with_replacement(self.cities, r=self.n):
             sol = np.array(sol)
             tmp_score = self.score(sol)
             if tmp_score > best_score:
