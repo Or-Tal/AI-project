@@ -41,7 +41,7 @@ class SolverStats(wx.Panel):
         self.current_canvas.Clear()
 
         if len(self.results) > 0:
-            x_max = self.results[-1].time
+            x_max = self.results[-1][2]
             #self.best_canvas.xSpec = (0, x_max)
             self.current_canvas.xSpec = (0, x_max)
 
@@ -53,16 +53,15 @@ class SolverStats(wx.Panel):
         #                          title='Best path distance over time',
         #                          xLabel='Time [ns]', yLabel='Distance')
 
-        current_points = [(r.time, r.current.distance) for r in self.results
-                          if r.current is not None and
-                          isinstance(r.current.distance, int)]
-        current_line = PolyLine(current_points)
-        current_plot = PlotGraphics([current_line],
-                                    title='Current path distance over time',
-                                    xLabel='Iter', yLabel='Score')
+        current_points = [(r[2], r[0]) for r in self.results]
+        if len(current_points) > 0:
+            current_line = PolyLine(current_points)
+            current_plot = PlotGraphics([current_line],
+                                        title='Current path distance over time',
+                                        xLabel='Iter', yLabel='Score')
 
-        #self.best_canvas.Draw(best_plot)
-        self.current_canvas.Draw(current_plot)
+            #self.best_canvas.Draw(best_plot)
+            self.current_canvas.Draw(current_plot)
 
     def reset(self):
         """Resets this control to its initial state.
