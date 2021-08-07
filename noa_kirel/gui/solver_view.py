@@ -507,13 +507,12 @@ class TSPView(wx.Panel):
     OPT_COLOR = 'light gray'
     PATH_WIDTH = 2
 
-    def __init__(self, parent, get_representor):
+    def __init__(self, parent, get_representer):
         super(TSPView, self).__init__(parent)
 
         # set coords
-        self.coords = dict()
 
-        self.get_rep
+        self.get_rep = get_representer
 
         # Cities list
         self._tsp = parent.tsp
@@ -602,7 +601,8 @@ class TSPView(wx.Panel):
         self.reset()
 
     def _on_solver_state_change(self, state):
-        """Handles solver state change event.
+        """
+        Handles solver state change event.
         """
 
         self.set_state(state)
