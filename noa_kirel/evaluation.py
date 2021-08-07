@@ -2,6 +2,7 @@ import numpy as np
 from collections import namedtuple
 from noa_kirel.main import main_func
 from constants import *
+from time import time
 
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
@@ -52,7 +53,8 @@ def run_hyperparams(cur_dset_paths,
 if __name__ == '__main__':
     small_dset_paths = ["3_cities.npy", "6_cities.npy", "9_cities.npy", "12_cities.npy", "15_cities.npy"]
     large_dset_paths = ["50_cities.npy", "60_cities.npy", "70_cities.npy", "80_cities.npy", "90_cities.npy",
-                        "100_cities.npy"]
+                        "100_cities.npy", "150_cities.npy", "200_cities.npy", "250_cities.npy", "300_cities.npy",
+                        "350_cities.npy", "400_cities.npy", "450_cities.npy", "500_cities.npy"]
 
     p_mutations = [0.1]
     steps_thresholds = [4000]
