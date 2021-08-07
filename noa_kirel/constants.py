@@ -17,5 +17,5 @@ NUM_ELITE = "elitism_factor"
 NUM_OF_CITIES = ["3", "6", "9", "12", "15", "50", "60",
                                      "70", "80", "90", "100"]
 
-def load_dset(path):
+def load_dset_vis(path):
     return np.load(path, allow_pickle=True).tolist()
