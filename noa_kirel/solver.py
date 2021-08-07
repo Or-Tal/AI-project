@@ -11,7 +11,7 @@ class Solver(abc.ABC):
         self._start_time = 0
 
     @abc.abstractmethod
-    def solve(self, ret_generator=True):
+    def solve(self):
         """
         main call method to solve a given initialized tsp problem.
         :param ret_generator: boolean flag, if True this method should return a generator to iterate over generated

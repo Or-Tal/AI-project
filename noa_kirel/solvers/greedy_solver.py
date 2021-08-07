@@ -1,6 +1,6 @@
 import numpy as np
 from noa_kirel.solver import Solver
-from copy import deepcopy
+from time import time
 
 
 class GreedySolver(Solver):
@@ -22,17 +22,16 @@ class GreedySolver(Solver):
     def score(self, sol):
         res = 0
         prev = -1
-        seen = set()
-        for x in sol:
-            r = self.rev[x] if x not in seen else 0
-            res += r - self.costs[(prev, x)]
+        for i, x in enumerate(sol):
+            res += self.rev[x, i] - self.costs[(prev, x)]
             prev = x
         return res
 
-    def solve(self, ret_generator=True):
+    def solve(self):
+        start_time = time()
         sol = list()
         opts = self.cities
-        scores = list()
+        score = 0
         for i in range(self.n):
 
             # re-init loop vars
@@ -49,12 +48,11 @@ class GreedySolver(Solver):
 
             # adds best candidate to solution
             sol.append(best_candidate)
-            scores.append(self.score(sol))
+            score = self.score(sol)
 
             # generator case
-            if ret_generator:
-                yield sol, scores[-1]
+            yield sol, score, time() - start_time
 
         # return greedy solution
-        return sol, scores[-1] if ret_generator else scores[1:]
+        return sol, score, time() - start_time
 
