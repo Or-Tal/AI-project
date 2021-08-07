@@ -1,13 +1,14 @@
 import argparse
 import os
-import city_selection
-import partition
+from noa_kirel import city_selection
+from noa_kirel import partition
 import pandas as pd
-from constants import *
-from generate_dataset import main_gen_func
-from solvers import GreedySolver
-from solvers import BruteForceSolver
-from solvers import GeneticSolver
+import matplotlib.pyplot as plt
+from noa_kirel.constants import *
+from noa_kirel.generate_dataset import main_gen_func
+from noa_kirel.solvers.greedy_solver import GreedySolver
+from noa_kirel.solvers.brute_force_solver import BruteForceSolver
+from noa_kirel.solvers.genetic_solver import GeneticSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -63,6 +64,13 @@ def save_results(sol, scores, a):
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
     df = pd.DataFrame.from_dict({"scores": scores})
     df.to_csv(f"./results/{a.save_name}.csv")
+    fig = plt.figure()
+    plt.plot(scores)
+    plt.title("Score as a function of iteration")
+    plt.ylabel("Score")
+    plt.xlabel("iter")
+    plt.savefig(f"./results/{a.save_name}.png")
+    plt.close(fig)
 
 
 def main_func(a):
