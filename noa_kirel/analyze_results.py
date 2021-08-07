@@ -101,8 +101,8 @@ def analyze_small_dataset():
 
 
 if __name__ == '__main__':
-    # fix("results/small")
-    # analyze_small_dataset()
+    fix("results/small")
+    analyze_small_dataset()
     analyze_large_dataset()
 
 

@@ -96,9 +96,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--n", default=100, help="num_of_cities", required=False)
-    parser.add_argument("--max_cost", default=50, help="max cost for each transition", required=False)
-    parser.add_argument("--max_rev", default=300, help="max cost for each transition", required=False)
-    parser.add_argument("--min_rev", default=50, help="max cost for each transition", required=False)
+    # parser.add_argument("--max_cost", default=50, help="max cost for each transition", required=False)
+    # parser.add_argument("--max_rev", default=300, help="max cost for each transition", required=False)
+    # parser.add_argument("--min_rev", default=50, help="max cost for each transition", required=False)
+    parser.add_argument("--max_cost", default=10000, help="max cost for each transition", required=False)
+    parser.add_argument("--max_rev", default=10000000, help="max cost for each transition", required=False)
+    parser.add_argument("--min_rev", default=10000, help="max cost for each transition", required=False)
     # parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy", required=False)
     parser.add_argument("--save_path", default="./noa_kirel/datasets/a.npy", help="path_to_save_dir/filename.npy",
                         required=False)
