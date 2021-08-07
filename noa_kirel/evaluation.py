@@ -2,6 +2,7 @@ import numpy as np
 from collections import namedtuple
 from noa_kirel.main import main_func
 from noa_kirel.constants import *
+import os
 
 
 Args = namedtuple("args", ['dset_path',
@@ -29,7 +30,7 @@ def run_hyperparams(cur_dset_paths,
     for path in cur_dset_paths:
         new_path = f"./datasets/{path}"
         num_cities = int(path.split(sep='_')[0])
-        if not cur_tour_lengths:
+        if cur_tour_lengths is None:
             cur_tour_lengths = np.linspace(3, num_cities, num_cities // 3, dtype=int)
 
         for population_size in cur_population_sizes:
@@ -45,6 +46,9 @@ def run_hyperparams(cur_dset_paths,
                                 save_name = f"{f'{prefix}/' if prefix is not None else ''}num_cities_{num_cities}_p_{p}_" \
                                             f"steps_{steps_threshold}_score_{score_thresholds}_population_" \
                                             f"{population_size}_{algorithm}_elitism_{elitism_factor}"
+                                if os.path.exists(f"./results/{save_name}.png"):
+                                    print(f"skipping: {save_name}")
+                                    continue
                                 args = Args(new_path, algorithm, 1, 1, p,
                                             steps_threshold, score_threshold, population_size, cur_tour_lengths[-1],
                                             elitism_factor, save_name)
