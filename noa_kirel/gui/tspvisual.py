@@ -16,29 +16,29 @@ from noa_kirel.city_selection import city_selection_1
 from noa_kirel.constants import *
 
 
-@dataclass
-class Representer:
-    coords: dict
-    n_cities: int
-    solver_names: list
-    cur_solver: str
-    params: dict
-    solvers: dict
-    dset: dict
-
-    def get_solver(self):
-        if self.cur_solver == GEN:
-            return self.solvers[GEN](self.dset[CITIES],
-                                     self.params[POP_SIZE],
-                                     self.params[TOUR_LEN],
-                                     partition_1,
-                                     city_selection_1,
-                                     np.inf,
-                                     self.params[STEPS],
-                                     self.params[MUT_RATE],
-                                     self.params[NUM_ELITE],
-                                     self.dset[COSTS], self.dset[REV])
-        return self.solvers[self.cur_solver](self.dset[CITIES], self.dset[COSTS], self.dset[REV], self.params[TOUR_LEN])
+# @dataclass
+# class Representer:
+#     coords: dict
+#     n_cities: int
+#     solver_names: list
+#     cur_solver: str
+#     params: dict
+#     solvers: dict
+#     dset: dict
+#
+#     def get_solver(self):
+#         if self.cur_solver == GEN:
+#             return self.solvers[GEN](self.dset[CITIES],
+#                                      self.params[POP_SIZE],
+#                                      self.params[TOUR_LEN],
+#                                      partition_1,
+#                                      city_selection_1,
+#                                      np.inf,
+#                                      self.params[STEPS],
+#                                      self.params[MUT_RATE],
+#                                      self.params[NUM_ELITE],
+#                                      self.dset[COSTS], self.dset[REV])
+#         return self.solvers[self.cur_solver](self.dset[CITIES], self.dset[COSTS], self.dset[REV], self.params[TOUR_LEN])
 
 
 
@@ -55,8 +55,6 @@ class TSPVisual(wx.Frame):
         # Solver results (for exporting)
         self._results = None
         # Current TSP instance
-        self._tsp = Representer(coords=dict(), n_cities=1, solver_names=[BF_SOL, GREEDY, GEN], cur_solver=GREEDY,
-                                dset=load_dset("./datasets/3_cities.npy"),)
 
         # GUI
         self._init_ui()
