@@ -104,8 +104,9 @@ class GeneticSolver(Solver):
         scores = self.__get_scores(population)
         elitism_factor = self.__elitism_factor if (self.__elitism_factor + self.__population_size) % 2 == 0 \
             else self.__elitism_factor + 1
+        flag = True
 
-        while best_solution is None:
+        while flag:
             weights = self.__selection_func(scores)  # weights is np.array
             indices = weights.argsort()[-elitism_factor:]
             new_population = np.zeros((self.__population_size, self.__tour_length), dtype=int)
@@ -119,13 +120,12 @@ class GeneticSolver(Solver):
 
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
-            best_solution, best_score = self.__get_best_solution(new_population, scores, step)
+            flag = best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
             population = new_population
-            # TODO add progress
-            yield best_solution, best_score, time() - start
+            yield best_solution, best_score, time() - start, (step - 1) / self.__steps_threshold
 
-        return best_solution, best_score, time() - start
+        return best_solution, best_score, time() - start, 1
 
     def __get_scores(self, population):
         """
@@ -196,7 +196,6 @@ class GeneticSolver(Solver):
         :return: The best solution if its score is higher than score threshold or if passed steps threshold,
                  else None
         """
-        best_solution, best_score = None, np.max(scores)
-        if step > self.__steps_threshold or best_score >= self.__score_threshold:
-            best_solution = population[np.argmax(scores)]
-        return best_solution, best_score
+        best_solution, best_score = population[np.argmax(scores)], np.max(scores)
+        flag = not (step > self.__steps_threshold or best_score >= self.__score_threshold)
+        return flag, best_solution, best_score

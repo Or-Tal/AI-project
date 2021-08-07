@@ -54,9 +54,8 @@ class GreedySolver(Solver):
             score = self.score(sol)
 
             # generator case
-            # TODO add progress
-            yield sol, score, time() - start_time
+            yield sol, score, time() - start_time, sol, score, (i + 1) / self.n
 
         # return greedy solution
-        return sol, score, time() - start_time
+        return sol, score, time() - start_time, sol, score, 1
 
