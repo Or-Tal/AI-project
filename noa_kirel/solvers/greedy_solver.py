@@ -32,6 +32,7 @@ class GreedySolver(Solver):
         sol = list()
         opts = self.cities
         score = 0
+        visited = set()
         for i in range(self.n):
 
             # re-init loop vars
@@ -41,12 +42,14 @@ class GreedySolver(Solver):
             # find the best next candidate
             prev = -1 if len(sol) == 0 else sol[-1]
             for x in opts:
-                tmp_score = self.rev[x, i] - self.costs[(prev, x)]
+                r = self.rev[x, i] if x not in visited else 0
+                tmp_score = r - self.costs[(prev, x)]
                 if tmp_score > best_score:
                     best_score = tmp_score
                     best_candidate = x
 
             # adds best candidate to solution
+            visited.add(best_candidate)
             sol.append(best_candidate)
             score = self.score(sol)
 

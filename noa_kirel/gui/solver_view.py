@@ -16,9 +16,31 @@ import os
 #from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
 
+from dataclasses import dataclass
+import numpy as np
+
+@dataclass
+class Representor:
+    coords: dict
+    cities: np.ndarray
+
+
+def randomize_coords(n_cities):
+    seen_coords = set()
+
+    def get_coords():
+        coords = (np.random.randint(0, 101), np.random.randint(0, 101))
+        while coords in seen_coords:
+            coords = (np.random.randint(0, 101), np.random.randint(0, 101))
+        seen_coords.add(coords)
+        return coords
+
+    return {i: get_coords() for i in range(n_cities)}
+
 
 class SolverView(wx.Panel):
-    """Main view of the app, solver controls and tsp view.
+    """
+    Main view of the app, solver controls and tsp view.
     """
 
     def __init__(self, parent):
@@ -87,7 +109,7 @@ class SolverControls(wx.Panel):
                        GREEDY: {TOUR_LEN: 3},
                        GEN: {POP_SIZE: 5, TOUR_LEN: 3, STEPS: 20, MUT_RATE: 0.01, NUM_ELITE: 1}}
         self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
-        self.tsp = None
+        self.tsp = Representor(coords=randomize_coords(self.num_of_cities), cities=np.arange(self.num_of_cities))
 
         # Current `SolverRunner`
         self.runner = None
@@ -325,7 +347,8 @@ class SolverControls(wx.Panel):
         self.solver = solver
 
     def _on_tsp_change(self, tsp):
-        """Handles TSP change event.
+        """
+        Handles TSP change event.
         """
 
         self.tsp = tsp
@@ -399,7 +422,8 @@ class TSPView(wx.Panel):
     def __init__(self, parent):
         super(TSPView, self).__init__(parent)
 
-        #
+        # set coords
+        self.coords = dict()
 
         # Cities list
         self._tsp = None
@@ -491,16 +515,6 @@ class TSPView(wx.Panel):
 
         self.reset()
 
-        if not tsp:
-            return
-
-        if not tsp.display:
-            wx.MessageBox('This instance does not have display data',
-                          'Warning', wx.OK | wx.ICON_WARNING)
-            return
-
-        self.tsp = tsp
-
     def _on_solver_state_change(self, state):
         """Handles solver state change event.
         """
@@ -513,11 +527,11 @@ class TSPView(wx.Panel):
         best, current or optimal path.
         """
 
-        if show_best is not None:
-            self.show_best = show_best
-
-        if show_current is not None:
-            self.show_current = show_current
+        # if show_best is not None:
+        #     self.show_best = show_best
+        #
+        # if show_current is not None:
+        #     self.show_current = show_current
 
         # Lilach removed
         # if show_best is not None:
