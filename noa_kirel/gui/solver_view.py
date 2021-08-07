@@ -8,7 +8,8 @@ from pubsub import pub
 from noa_kirel.gui.helpers import borders
 from noa_kirel.gui.solver_runner import SolverRunner
 from noa_kirel.solver import Solver
-from noa_kirel.solvers import greedy_solver, brute_force_solver, genetic_solver
+from noa_kirel.solvers import greedy_solver, brute_force_solver, \
+    genetic_solver
 from noa_kirel.constants import *
 from noa_kirel.partition import partition_1
 from noa_kirel.city_selection import city_selection_1
@@ -17,35 +18,14 @@ import os
 #from solvers import *  # noqa: F403, F401
 # Weird solution for importing solvers when frozen with PyInstaller
 
-from dataclasses import dataclass
-import numpy as np
-
-@dataclass
-class Representor:
-    coords: dict
-    cities: np.ndarray
-
-
-def randomize_coords(n_cities):
-    seen_coords = set()
-
-    def get_coords():
-        coords = (np.random.randint(0, 101), np.random.randint(0, 101))
-        while coords in seen_coords:
-            coords = (np.random.randint(0, 101), np.random.randint(0, 101))
-        seen_coords.add(coords)
-        return coords
-
-    return {i: get_coords() for i in range(n_cities)}
-
 
 class SolverView(wx.Panel):
-    """
-    Main view of the app, solver controls and tsp view.
+    """Main view of the app, solver controls and tsp view.
     """
 
     def __init__(self, parent):
         super(SolverView, self).__init__(parent)
+        self._init_ui()
 
     def _init_ui(self):
         """Builds GUI.
@@ -103,13 +83,14 @@ class SolverControls(wx.Panel):
         self.num_of_cities = NUM_OF_CITIES
 
         # Currently selected solver and tsp
-        self.dset = load_dset("./datasets/3_cities.npy")
+        cwd = os.getcwd()
+        self.dset = load_dset_vis("./datasets/3_cities.npy")
 
         self.params = {BF_SOL: {TOUR_LEN: 3},
                        GREEDY: {TOUR_LEN: 3},
                        GEN: {POP_SIZE: 5, TOUR_LEN: 3, STEPS: 20, MUT_RATE: 0.01, NUM_ELITE: 1}}
         self.solver = self.get_solver(BF_SOL, self.dset, self.params[BF_SOL])
-        self.tsp = Representor(coords=randomize_coords(self.num_of_cities), cities=np.arange(self.num_of_cities))
+        self.tsp = None
 
         # Current `SolverRunner`
         self.runner = None
@@ -246,7 +227,7 @@ class SolverControls(wx.Panel):
         population_size = wx.StaticText(props_box, label='Population size')
         props_sizer.Add(population_size, (0, 1), (1, 1),
                         wx.EXPAND | borders('r'), 10)
-        self.population_size = wx.Slider(props_box, value=0, minValue=0,
+        self.population_size = wx.Slider(props_box, value=0, minValue=1,
                                        maxValue=1000,
                                        style=wx.SL_LABELS)
         props_sizer.Add(self.population_size, (1, 1), (1, 1),
@@ -313,7 +294,6 @@ class SolverControls(wx.Panel):
         """Handles selecting solver from solvers combobox.
         """
         solver_name = self.solver_names[self.solver_select.GetSelection()]
-
         self.solver = self.get_solver(solver_name, self.dset, self.params[solver_name])
         self.cur_solver = solver_name
         pub.sendMessage('SOLVER_CHANGE', solver=solver_name)
@@ -321,7 +301,7 @@ class SolverControls(wx.Panel):
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
-        self.dset = load_dset(f"./datasets/{event.String}_cities.npy")
+        self.dset = load_dset_vis(f"./datasets/{event.String}_cities.npy")
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[self.cur_solver])
         pub.sendMessage('NUM_OF_CITIES_CHANGE', num_of_cities=self.dset[CITIES])
 
@@ -433,8 +413,7 @@ class SolverControls(wx.Panel):
         self.solver = solver
 
     def _on_tsp_change(self, tsp):
-        """
-        Handles TSP change event.
+        """Handles TSP change event.
         """
 
         self.tsp = tsp
@@ -508,11 +487,8 @@ class TSPView(wx.Panel):
     def __init__(self, parent):
         super(TSPView, self).__init__(parent)
 
-        # set coords
-
-
         # Cities list
-        self._tsp = parent.tsp
+        self._tsp = None
         self._points = []
         # Solver state
         self._state = None
@@ -591,15 +567,23 @@ class TSPView(wx.Panel):
         self.calculate_points()
 
     def _on_tsp_change(self, tsp):
+        """Handles TSP change event.
         """
-        Handles TSP change event.
-        """
+
         self.reset()
 
+        if not tsp:
+            return
+
+        if not tsp.display:
+            wx.MessageBox('This instance does not have display data',
+                          'Warning', wx.OK | wx.ICON_WARNING)
+            return
+
+        self.tsp = tsp
 
     def _on_solver_state_change(self, state):
-        """
-        Handles solver state change event.
+        """Handles solver state change event.
         """
 
         self.set_state(state)
@@ -610,11 +594,11 @@ class TSPView(wx.Panel):
         best, current or optimal path.
         """
 
-        # if show_best is not None:
-        #     self.show_best = show_best
-        #
-        # if show_current is not None:
-        #     self.show_current = show_current
+        if show_best is not None:
+            self.show_best = show_best
+
+        if show_current is not None:
+            self.show_current = show_current
 
         self.Refresh()
 

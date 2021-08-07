@@ -1,7 +1,7 @@
 import wx
 import wx.adv
 import wx.lib.inspection
-from dataclasses import dataclass
+
 import numpy as np
 from pubsub import pub
 
@@ -16,29 +16,8 @@ from noa_kirel.city_selection import city_selection_1
 from noa_kirel.constants import *
 
 
-# @dataclass
-# class Representer:
-#     coords: dict
-#     n_cities: int
-#     solver_names: list
-#     cur_solver: str
-#     params: dict
-#     solvers: dict
-#     dset: dict
-#
-#     def get_solver(self):
-#         if self.cur_solver == GEN:
-#             return self.solvers[GEN](self.dset[CITIES],
-#                                      self.params[POP_SIZE],
-#                                      self.params[TOUR_LEN],
-#                                      partition_1,
-#                                      city_selection_1,
-#                                      np.inf,
-#                                      self.params[STEPS],
-#                                      self.params[MUT_RATE],
-#                                      self.params[NUM_ELITE],
-#                                      self.dset[COSTS], self.dset[REV])
-#         return self.solvers[self.cur_solver](self.dset[CITIES], self.dset[COSTS], self.dset[REV], self.params[TOUR_LEN])
+
+
 
 
 
