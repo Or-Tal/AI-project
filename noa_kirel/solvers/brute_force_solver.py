@@ -2,6 +2,7 @@ import numpy as np
 from noa_kirel.solver import Solver
 from itertools import permutations
 from noa_kirel.constants import BF_SOL
+from time import time
 
 
 class BruteForceSolver(Solver):
@@ -27,20 +28,20 @@ class BruteForceSolver(Solver):
             prev = x
         return acc_score
 
-    def solve(self, ret_generator=True):
+    def solve(self):
+        start_time = time()
         best_score = np.NINF
         best_sol = None
-        scores = []
         for sol in permutations(self.cities, r=self.n):
             sol = np.array(sol)
             tmp_score = self.score(sol)
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
-            if ret_generator:
-                yield sol, tmp_score
-            scores.append(best_score)
-        return best_sol, best_score if ret_generator else scores
+
+            yield sol, tmp_score, time() - start_time
+
+        return best_sol, best_score, time() - start_time
 
 
 
