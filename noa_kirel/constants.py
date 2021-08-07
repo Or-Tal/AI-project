@@ -6,7 +6,6 @@ GEN = "genetic"
 # todo kick out optimal and replace by brute force
 OPT = "optimal"
 GREEDY = "greedy"
-
 BF_SOL = "brute_force"
 
 # genetic ctor params for gui

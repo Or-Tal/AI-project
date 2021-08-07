@@ -1,6 +1,7 @@
 import numpy as np
 from noa_kirel.solver import Solver
 from itertools import permutations
+from noa_kirel.constants import BF_SOL
 
 
 class BruteForceSolver(Solver):
@@ -13,7 +14,7 @@ class BruteForceSolver(Solver):
         self.costs = costs
         self.rev = revenues
         self.n = int(tour_length)
-        self.name = "brute_force"
+        self.name = BF_SOL
 
     def score(self, sol: np.ndarray):
         """
@@ -21,8 +22,8 @@ class BruteForceSolver(Solver):
         """
         acc_score = 0
         prev = -1
-        for x in sol:
-            acc_score += self.rev[x] - self.costs[(prev, x)]
+        for i, x in enumerate(sol):
+            acc_score += self.rev[x, i] - self.costs[(prev, x)]
             prev = x
         return acc_score
 
