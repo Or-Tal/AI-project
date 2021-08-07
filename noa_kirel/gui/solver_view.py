@@ -44,9 +44,10 @@ class SolverView(wx.Panel):
     Main view of the app, solver controls and tsp view.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, get_representer):
         super(SolverView, self).__init__(parent)
         self._init_ui()
+        self.get_rep = get_representer
 
     def _init_ui(self):
         """Builds GUI.
@@ -55,11 +56,12 @@ class SolverView(wx.Panel):
         # Panel sizer
         sizer = wx.BoxSizer(wx.HORIZONTAL)
 
+
         # Solver controls and TSP view
-        self.controls = SolverControls(self)
+        self.controls = SolverControls(self, self.get_rep)
         tsp_view_box = wx.StaticBox(self, label='Visualisation')
         tsp_view_box_sizer = wx.StaticBoxSizer(tsp_view_box)
-        self.tsp_view = TSPView(tsp_view_box)
+        self.tsp_view = TSPView(tsp_view_box, self.get_rep)
         tsp_view_box_sizer.Add(self.tsp_view, 1, wx.EXPAND)
         sizer.Add(self.controls, 0, wx.EXPAND | wx.ALL, 10)
         sizer.Add(tsp_view_box_sizer, 1, wx.EXPAND | borders('trb'), 10)
@@ -89,7 +91,7 @@ class SolverControls(wx.Panel):
                                              dset[COSTS], dset[REV])
         return self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
 
-    def __init__(self, parent):
+    def __init__(self, parent, get_representer):
         super(SolverControls, self).__init__(parent)
 
         # List of all available solvers
@@ -505,14 +507,16 @@ class TSPView(wx.Panel):
     OPT_COLOR = 'light gray'
     PATH_WIDTH = 2
 
-    def __init__(self, parent):
+    def __init__(self, parent, get_representor):
         super(TSPView, self).__init__(parent)
 
         # set coords
         self.coords = dict()
 
+        self.get_rep
+
         # Cities list
-        self._tsp = None
+        self._tsp = parent.tsp
         self._points = []
         # Solver state
         self._state = None
@@ -591,7 +595,8 @@ class TSPView(wx.Panel):
         self.calculate_points()
 
     def _on_tsp_change(self, tsp):
-        """Handles TSP change event.
+        """
+        Handles TSP change event.
         """
 
         self.reset()

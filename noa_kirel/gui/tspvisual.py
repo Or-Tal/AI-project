@@ -1,6 +1,8 @@
 import wx
 import wx.adv
 import wx.lib.inspection
+from dataclasses import dataclass
+import numpy as np
 from pubsub import pub
 
 from noa_kirel.gui.export import export_results, export_scr, export_tour
@@ -9,6 +11,18 @@ from noa_kirel.gui.solver_stats import SolverStats
 from noa_kirel.gui.solver_view import SolverView
 #from noa_kirel.gui.tsp_info import TSPInfo
 from noa_kirel.tsp import TSP
+
+
+@dataclass
+class Representor:
+    coords: dict
+    cities: np.ndarray
+    cur_solver: str
+    params: dict
+    solver: dict
+
+    get_solver
+
 
 
 class TSPVisual(wx.Frame):
@@ -24,7 +38,7 @@ class TSPVisual(wx.Frame):
         # Solver results (for exporting)
         self._results = None
         # Current TSP instance
-        self._tsp = None
+        self._tsp = Representor()
 
         # GUI
         self._init_ui()
