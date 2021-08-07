@@ -23,15 +23,19 @@ class BruteForceSolver(Solver):
         """
         acc_score = 0
         prev = -1
+        visited = set()
         for i, x in enumerate(sol):
-            acc_score += self.rev[x, i] - self.costs[(prev, x)]
+            r = self.rev[x, i] if x not in visited else 0
+            acc_score += r - self.costs[(prev, x)]
             prev = x
+            visited.add(x)
         return acc_score
 
     def solve(self):
         start_time = time()
         best_score = np.NINF
         best_sol = None
+
         for sol in combinations_with_replacement(self.cities, r=self.n):
             sol = np.array(sol)
             tmp_score = self.score(sol)
