@@ -35,16 +35,16 @@ class BruteForceSolver(Solver):
         start_time = time()
         best_score = np.NINF
         best_sol = None
+        counter = 1
         for sol in product(self.cities, repeat=self.n):
             sol = np.array(sol)
             tmp_score = self.score(sol)
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
-            # TODO add progress
-            yield best_sol, best_score, time() - start_time
+            yield sol, tmp_score, time() - start_time, best_sol, best_score, counter / self.n
 
-        return best_sol, best_score, time() - start_time
+        return best_sol, best_score, time() - start_time, best_sol, best_score, 1
 
 
 

@@ -350,7 +350,7 @@ class SolverControls(wx.Panel):
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
         """
-
+        self.Parent.tsp_view.gen_coords()
         pub.sendMessage('SOLVER_STATE_CHANGE', state=None)
         pub.sendMessage('SOLVER_STATE_RESET')
 
@@ -416,6 +416,7 @@ class SolverControls(wx.Panel):
         """
 
         self.num_of_cities = num_of_cities
+        self._on_reset(None)
 
     def _on_solver_change(self, solver):
         """Handles solver change event.
@@ -494,22 +495,32 @@ class TSPView(wx.Panel):
     PATH_WIDTH = 2
 
     def gen_coords(self):
+        self._points = dict()
         n_cities = self.Parent.Parent.controls.dset[CITIES]
         seen = set()
         def get_coord():
-            coord = (np.random.randint(0, 101), np.random.randint(0, 101))
+            coord = (np.random.randint(30, 701), np.random.randint(30, 701))
+            # coord = (np.random.randint(0, 501), np.random.randint(0, 501))
             while coord in seen:
-                coord = (np.random.randint(0, 101), np.random.randint(0, 101))
+                coord = (np.random.randint(0, 501), np.random.randint(0, 501))
             seen.add(coord)
             return coord
-        return {i: get_coord() for i in range(n_cities)}
+
+        cities = [get_coord() for _ in range(n_cities)]
+
+        # Calculate for all points
+        for i, c in enumerate(cities):
+            # Note the inverted y axis
+            self._points[i] = (c[0], c[1])
+
 
     def __init__(self, parent):
         super(TSPView, self).__init__(parent)
 
         # Cities list
         self._tsp = None
-        self._points = self.gen_coords()
+        self._points = None
+        self.gen_coords()
         # self._points = None
         # Solver state
         self._state = None
@@ -544,25 +555,17 @@ class TSPView(wx.Panel):
         dc.Clear()
 
         # Skip if there are no points
-        if not self._points:
+        if len(self._points) == 0:
             return
 
         # Draw state if it's defined
         if self._state:
             # Draw current path if there's no best even if it's disabled
-            draw_current = (
-                    self._state.current and
-                    (self.show_current or not self._state.best)
-            )
-            draw_best = (
-                    (self._state.best or self._state.final) and
-                    self.show_best
-            )
-            # Draw paths
-            if draw_best:
-                self._draw_path(dc, self._state.best, self.BEST_COLOR)
-            if draw_current:
-                self._draw_path(dc, self._state.current, self.CURRENT_COLOR)
+            self._draw_path(dc, self._state[-3], self.BEST_COLOR)
+            if set(self._state[-3]) != set(self._state[0]):
+                self._draw_path(dc, self._state[0], self.CURRENT_COLOR)
+
+
 
         # Draw cities
         dc.SetPen(wx.Pen(self.CITY_COLOR))
@@ -578,7 +581,7 @@ class TSPView(wx.Panel):
         for i in range(len(path) - 1):
             if path[i] == -1 or path[i + 1] == -1:
                 continue
-            dc.DrawLine(*self._points[path[i]], *self._points[path[i + 1]])
+            dc.DrawLine(self._points[path[i]], self._points[path[i + 1]])
 
     def _on_resize(self, event):
         """Handles resize event.
