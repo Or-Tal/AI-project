@@ -1,7 +1,7 @@
 import numpy as np
 from collections import namedtuple
 from noa_kirel.main import main_func
-from constants import *
+from noa_kirel.constants import *
 from time import time
 
 Args = namedtuple("args", ['dset_path',
