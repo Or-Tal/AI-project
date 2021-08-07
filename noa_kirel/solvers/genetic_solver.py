@@ -70,15 +70,12 @@ class GeneticSolver(Solver):
             if solution is None or solution.size == 0:
                 return 0
 
-            visited = set()
             fitness = 0
             prev = INITIAL_CITY
 
-            for cur_city in solution:
-                cur_rev = city_rev[cur_city] if cur_city not in visited else 0
-                fitness += cur_rev - transfer_costs[(prev, cur_city)]
+            for i, cur_city in enumerate(solution):
+                fitness += (city_rev[(cur_city, i)] - transfer_costs[(prev, cur_city)])
                 prev = cur_city
-                visited.add(cur_city)
 
             return fitness
 
