@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import softmax
 from noa_kirel.solver import Solver
+from time import time
 
 INITIAL_CITY = -1
 
@@ -88,12 +89,13 @@ class GeneticSolver(Solver):
         """
         return np.random.choice(np.arange(self.__num_cities), size=(self.__population_size, self.__tour_length))
 
-    def solve(self, ret_generator=True):
+    def solve(self):
         """
         Solves the tour planning using a genetic algorithm
         :return: 1d-array of the best solution found by the algorithm
         """
-        best_solution, best_scores = None, []
+        start = time()
+        best_solution, best_score = None, 0
         step = 1
         population = self.__initial_population
         scores = self.__get_scores(population)
@@ -115,13 +117,11 @@ class GeneticSolver(Solver):
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
             best_solution, best_score = self.__get_best_solution(new_population, scores, step)
-            best_scores.append(best_score)
             step += 1
             population = new_population
-            if ret_generator:
-                yield best_solution, best_score
+            yield best_solution, best_score, time() - start
 
-        return best_solution, (best_scores[-1] if ret_generator else best_scores)
+        return best_solution, best_score, time() - start
 
     def __get_scores(self, population):
         """
