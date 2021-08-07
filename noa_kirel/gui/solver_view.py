@@ -98,7 +98,6 @@ class SolverControls(wx.Panel):
         self.runner = None
         # Whether ther is currently running solver
         self.running = False
-
         self.best_sol = None
         self.best_score = np.NINF
         self.cur_sol = None
@@ -162,19 +161,6 @@ class SolverControls(wx.Panel):
                                        style=wx.SL_LABELS)
         solver_sizer.Add(self.delay, (3, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-
-        #Show best path checkbox
-        # self.show_best = wx.CheckBox(solver_box,
-        #                              label='Show the best found path')
-        # self.show_best.SetValue(True)
-        # solver_sizer.Add(self.show_best, (4, 0), (1, 2),
-        #                  wx.EXPAND | borders('rl'), 10)
-        # #Show current path checkbox
-        # self.show_current = wx.CheckBox(solver_box,
-        #                                 label='Show current working path')
-        # self.show_current.SetValue(True)
-        # solver_sizer.Add(self.show_current, (5, 0), (1, 2),
-        #                  wx.EXPAND | borders('rl'), 10)
 
         # Solve button
         self.solve_button = wx.Button(solver_box,
@@ -316,18 +302,27 @@ class SolverControls(wx.Panel):
         """Handles clicking 'solve' button - runs `SolverRunner` with currently
         set solver and tsp.
         """
+        num_of_days = self.params[self.cur_solver][TOUR_LEN]
+        num_of_cities = self.dset[CITIES]
         if self.cur_solver == GEN:
-            num_of_days = self.params[self.cur_solver][TOUR_LEN]
-            num_of_cities = self.dset[CITIES]
             population_size = self.params[self.cur_solver][POP_SIZE]
             num_of_elite = self.params[self.cur_solver][NUM_ELITE]
             if num_of_days * num_of_cities < population_size:
-                wx.MessageBox('Population size is too big', 'Error',wx.ICON_ERROR | wx.OK)
+                wx.MessageBox('Population size is too big', 'Error',
+                              wx.ICON_ERROR | wx.OK)
                 return
             if num_of_days < num_of_elite:
-                wx.MessageBox('Elitisim is too big', 'Error',wx.ICON_ERROR | wx.OK)
+                wx.MessageBox('Elitisim is too big', 'Error', wx.ICON_ERROR
+                              | wx.OK)
                 return
-        # TODO LILACH - add support for BF and Greedy for tour length valid check
+
+        if self.cur_solver == GREEDY or self.cur_solver == BF_SOL:
+            num_of_days = self.params[self.cur_solver][TOUR_LEN]
+            num_of_cities = self.dset[CITIES]
+            if num_of_days > num_of_cities:
+                wx.MessageBox('Tour length is too long', 'Error',
+                              wx.ICON_ERROR | wx.OK)
+                return
 
         if not self.running:
 
@@ -345,10 +340,6 @@ class SolverControls(wx.Panel):
             self.runner.stop()
             # Set state to not running
             self._set_running(False)
-
-
-
-
 
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
