@@ -120,7 +120,7 @@ class GeneticSolver(Solver):
 
             new_population = self.__mutation(new_population)
             scores = self.__get_scores(new_population)
-            flag = best_solution, best_score = self.__get_best_solution(new_population, scores, step)
+            flag, best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
             population = new_population
             yield best_solution, best_score, time() - start, (step - 1) / self.__steps_threshold
