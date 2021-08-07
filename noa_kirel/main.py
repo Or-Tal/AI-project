@@ -60,6 +60,8 @@ def get_solver(a, dset):
 def save_results(sol, scores, times, a):
     if not os.path.exists("results"):
         os.mkdir("results")
+    if len(a.save_name.split("/")) == 2 and not os.path.exists(f"./results/{a.save_name.split('/')[0]}"):
+        os.mkdir(f"./results/{a.save_name.split('/')[0]}")
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
     df = pd.DataFrame.from_dict({"scores": scores, "times": times})
