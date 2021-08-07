@@ -2,7 +2,7 @@ import numpy as np
 from collections import namedtuple
 from noa_kirel.main import main_func
 from noa_kirel.constants import *
-from time import time
+
 
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
@@ -24,7 +24,8 @@ def run_hyperparams(cur_dset_paths,
                     cur_population_sizes,
                     cur_algorithms,
                     cur_tour_lengths=None,
-                    cur_elitism_factors=None):
+                    cur_elitism_factors=None,
+                    prefix=None):
     for path in cur_dset_paths:
         new_path = f"./datasets/{path}"
         num_cities = int(path.split(sep='_')[0])
@@ -41,33 +42,33 @@ def run_hyperparams(cur_dset_paths,
                     for steps_threshold in cur_steps_thresholds:
                         for score_threshold in cur_score_thresholds:
                             for algorithm in cur_algorithms:
-                                save_name = f"num_cities_{num_cities}_p_{p}_" \
+                                save_name = f"{f'{prefix}/' if prefix is not None else ''}num_cities_{num_cities}_p_{p}_" \
                                             f"steps_{steps_threshold}_score_{score_thresholds}_population_" \
                                             f"{population_size}_{algorithm}_elitism_{elitism_factor}"
                                 args = Args(new_path, algorithm, 1, 1, p,
-                                            steps_threshold, score_threshold, population_size, 30,
+                                            steps_threshold, score_threshold, population_size, cur_tour_lengths[-1],
                                             elitism_factor, save_name)
                                 main_func(args)
 
 
 if __name__ == '__main__':
-    small_dset_paths = ["3_cities.npy", "6_cities.npy", "9_cities.npy", "12_cities.npy", "15_cities.npy"]
-    large_dset_paths = ["50_cities.npy", "60_cities.npy", "70_cities.npy", "80_cities.npy", "90_cities.npy",
-                        "100_cities.npy", "150_cities.npy", "200_cities.npy", "250_cities.npy", "300_cities.npy",
-                        "350_cities.npy", "400_cities.npy", "450_cities.npy", "500_cities.npy"]
+    small_dset_paths = ["9_cities.npy", "15_cities.npy"]
+    large_dset_paths = ["50_cities.npy", "80_cities.npy",
+                        "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
+                        "400_cities.npy", "500_cities.npy"]
 
     p_mutations = [0.1]
-    steps_thresholds = [4000]
+    steps_thresholds = [15000]
     score_thresholds = [np.inf]
     small_population_sizes = [7, 10, 20, 50]
     large_population_sizes = [150]
     large_tour_lengths = [30]
     large_elitism_factors = [30]
 
-    # run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-    #                 score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL])
+    run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
+                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
                     score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
-                    large_elitism_factors)
+                    large_elitism_factors, prefix="large")
 

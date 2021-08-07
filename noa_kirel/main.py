@@ -57,12 +57,14 @@ def get_solver(a, dset):
                              dset[REV])
 
 
-def save_results(sol, scores, a):
+def save_results(sol, scores, times, a):
     if not os.path.exists("results"):
         os.mkdir("results")
+    if len(a.save_name.split("/")) == 2 and not os.path.exists(f"./results/{a.save_name.split('/')[0]}"):
+        os.mkdir(f"./results/{a.save_name.split('/')[0]}")
 
     np.save(f"./results/{a.save_name}", {"solution": sol, "scores": scores})
-    df = pd.DataFrame.from_dict({"scores": scores})
+    df = pd.DataFrame.from_dict({"scores": scores, "times": times})
     fig = plt.figure()
     plt.plot(scores)
     plt.title("Score as a function of iteration")
@@ -81,8 +83,8 @@ def main_func(a):
     check_args(a, dset)
     solver = get_solver(a, dset)
     ret = np.array([x for x in solver.solve()])
-    sol, scores = ret[:, 0][-1], ret[:, 1]
-    save_results(sol, scores, a)
+    sol, scores, times = ret[:, 0][-1], ret[:, 1], ret[:, 2]
+    save_results(sol, scores, times, a)
 
 
 def parse_args():
@@ -115,7 +117,7 @@ def parse_args():
                         required=False)
     parser.add_argument("--score_th", default=np.inf, help="threshold for max score", required=False)
     parser.add_argument("--population_size", default=200, help="population size", required=False)
-    parser.add_argument("--tour_length", default=15, help="number of tour days", required=False)
+    parser.add_argument("--tour_length", default=10, help="number of tour days", required=False)
     parser.add_argument("--elitism_factor", default=50, help="elitism factor", required=False)
     parser.add_argument("--partition", required=False, help="partition function version - only for genetic", default=1)
     parser.add_argument("--city_selection", required=False, help="city selection function version - only for genetic",
