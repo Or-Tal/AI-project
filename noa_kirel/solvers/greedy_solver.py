@@ -21,9 +21,12 @@ class GreedySolver(Solver):
 
     def score(self, sol):
         res = 0
+        visited = set()
         prev = -1
         for i, x in enumerate(sol):
-            res += self.rev[x, i] - self.costs[(prev, x)]
+            rev = self.rev[(x, i)] if x not in visited else 0
+            res += (rev - self.costs[(prev, x)])
+            visited.add(x)
             prev = x
         return res
 
