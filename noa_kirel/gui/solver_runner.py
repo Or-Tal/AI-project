@@ -12,7 +12,7 @@ class SolverRunner(threading.Thread):
     to the GUI with new states.
     """
 
-    def __init__(self, solver, tsp):
+    def __init__(self, solver):
         """Creates new SolverRunner for given solver and TSP instance.
 
         :param Solver solver: TSP solver instance.
@@ -31,14 +31,11 @@ class SolverRunner(threading.Thread):
         # Results queue
         self._queue = multiprocessing.Queue()
 
-
-
         # Results list
         self.results = []
 
         # Solver and TSP instance
         self._solver = solver
-        self._tsp = tsp
 
         # Event signalling this thread to stop
         self._stop_event = threading.Event()
@@ -57,7 +54,7 @@ class SolverRunner(threading.Thread):
 
         # Start solver process
         self.solver_process = SolverProcess(
-            self._solver, self._tsp, self._queue)
+            self._solver, self._queue)
         self.solver_process.daemon = True
         self.solver_process.start()
 
@@ -79,7 +76,7 @@ class SolverRunner(threading.Thread):
                 next_message_time = time.time() + message_interval
 
             # Break out of the loop if it's the final state
-            if state.final:
+            if state[-1] == 1:
                 break
 
             # Sleep specified amount of itme
@@ -119,12 +116,11 @@ class SolverProcess(multiprocessing.Process):
     it wants without interfering with GUI.
     """
 
-    def __init__(self, solver, tsp, queue):
+    def __init__(self, solver, queue):
         multiprocessing.Process.__init__(self)
 
         # Queue for storing queue
         self._solver = solver
-        self._tsp = tsp
         self._queue = queue
 
         # Signal to stop the process
@@ -134,7 +130,7 @@ class SolverProcess(multiprocessing.Process):
         """Runs the solver in loop, stops on event.
         """
 
-        for state in self._solver.solve(self._tsp):
+        for state in self._solver.solve():
             self._queue.put_nowait(state)
 
             if self._stop_event.is_set():
