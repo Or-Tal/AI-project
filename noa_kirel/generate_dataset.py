@@ -27,14 +27,15 @@ def randomize_cost(num_cities: int, max_cost: int, revenues: dict, ver: int) -> 
         return 0 if z == y else np.random.randint(max(1, max_cost // 10), max_cost)
 
     ret = {(cities[i], j): x for j in range(num_cities) for i, x in enumerate(map(get_cost, cities))}
-
-    for j in range(num_cities):
-        for i, x in enumerate(map(get_cost2, triplets)):
-            ret[(triplets[i], j)] = x
+    if ver == 2:
+        for j in range(num_cities):
+            for i, x in enumerate(map(get_cost2, triplets)):
+                ret[(triplets[i], j)] = x
     for i in range(num_cities):
         for j in range(num_cities):
-            ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
-                                  + (np.random.randint(30, 45) * revenues[i, 0])
+            if ver == 2:
+                ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                                      + (np.random.randint(30, 45) * revenues[i, 0])
             ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
                               + (np.random.randint(30, 45) * revenues[i, 0]) // 100
 
