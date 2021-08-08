@@ -1,4 +1,5 @@
 from operator import itemgetter
+from noa_kirel.constants import *
 
 import wx
 import wx.lib.agw.floatspin as Fs
@@ -157,7 +158,7 @@ class SolverControls(wx.Panel):
         delay_label = wx.StaticText(solver_box, label='Delay [ms]')
         solver_sizer.Add(delay_label, (2, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
-        self.delay = wx.Slider(solver_box, value=0, minValue=0, maxValue=1000,
+        self.delay = wx.Slider(solver_box, value=50, minValue=50, maxValue=600,
                                        style=wx.SL_LABELS)
         solver_sizer.Add(self.delay, (3, 0), (1, 2),
                          wx.EXPAND | borders('rl'), 10)
@@ -253,7 +254,7 @@ class SolverControls(wx.Panel):
         props_sizer.Add(tour_len, (4, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
         self.tour_len = wx.Slider(props_box, value=1, minValue=1,
-                                     maxValue=1000, style=wx.SL_LABELS)
+                                     maxValue=50, style=wx.SL_LABELS)
         props_sizer.Add(self.tour_len, (5, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
 
@@ -363,40 +364,40 @@ class SolverControls(wx.Panel):
         """
         val = event.EventObject.Value
         self.params[self.cur_solver][MUT_RATE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
+                                      self.cur_solver])
 
     def _on_population_size_set(self, event):
         """Handles setting 'population_size' slider
         """
         val = event.EventObject.Value
         self.params[self.cur_solver][POP_SIZE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
+                                      self.cur_solver])
 
     def _on_elite_size_set(self, event):
         """Handles setting 'elite_size' slider
         """
         val = event.EventObject.Value
         self.params[self.cur_solver][NUM_ELITE] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
+                                      self.cur_solver])
 
     def _on_generations_set(self, event):
         """Handles setting number of 'generations' slider
         """
         val = event.EventObject.Value
         self.params[self.cur_solver][STEPS] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
+                                      self.cur_solver])
 
     def _on_tour_len_set(self, event):
         """Handles setting 'tour len' slider
         """
         val = event.EventObject.Value
         self.params[self.cur_solver][TOUR_LEN] = val
-        self.get_solver(self.cur_solver, self.dset, self.params[
-            self.cur_solver])
+        self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
+                                      self.cur_solver])
 
     def _on_view_change(self, event):
         """Handles checking or unchecking one of view option checkboxes.
@@ -409,6 +410,8 @@ class SolverControls(wx.Panel):
         """
 
         self.num_of_cities = num_of_cities
+        self.dset = load_dset_vis(f"datasets/{num_of_cities}_cities.npy")
+        self.solver = self.get_cur_solver()
         self._on_reset(None)
 
     def _on_solver_change(self, solver):
@@ -555,7 +558,8 @@ class TSPView(wx.Panel):
         if self._state:
             # Draw current path if there's no best even if it's disabled
             self._draw_path(dc, self._state[-3], self.BEST_COLOR)
-            if set(self._state[-3]) != set(self._state[0]):
+            b = np.nonzero(np.array(self._state[-3]) - np.array(self._state[0]))[0]
+            if len(b) > 1:
                 self._draw_path(dc, self._state[0], self.CURRENT_COLOR)
 
 
