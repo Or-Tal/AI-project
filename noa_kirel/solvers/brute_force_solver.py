@@ -46,6 +46,3 @@ class BruteForceSolver(Solver):
 
         return best_sol, best_score, time() - start_time, best_sol, best_score, 1
 
-
-
-
