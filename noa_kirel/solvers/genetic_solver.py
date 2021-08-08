@@ -77,7 +77,7 @@ class GeneticSolver(Solver):
 
             for i, cur_city in enumerate(solution):
                 cur_rev = city_rev[(cur_city, i)] if cur_city not in visited else 0
-                fitness += (cur_rev - transfer_costs[(prev, cur_city)])
+                fitness += (cur_rev - transfer_costs[(prev, cur_city), i])
                 prev = cur_city
                 visited.add(cur_city)
 

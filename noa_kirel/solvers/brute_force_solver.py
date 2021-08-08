@@ -26,7 +26,7 @@ class BruteForceSolver(Solver):
         visited = set()
         for i, x in enumerate(sol):
             r = self.rev[(x, i)] if x not in visited else 0
-            acc_score += r - self.costs[(prev, x)]
+            acc_score += r - self.costs[(prev, x), i]
             prev = x
             visited.add(x)
         return acc_score
