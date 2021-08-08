@@ -25,7 +25,7 @@ class GreedySolver(Solver):
         prev = -1
         for i, x in enumerate(sol):
             rev = self.rev[(x, i)] if x not in visited else 0
-            res += (rev - self.costs[(prev, x)])
+            res += (rev - self.costs[(prev, x), i])
             visited.add(x)
             prev = x
         return res
@@ -46,7 +46,7 @@ class GreedySolver(Solver):
             prev = -1 if len(sol) == 0 else sol[-1]
             for x in opts:
                 r = self.rev[x, i] if x not in visited else 0
-                tmp_score = r - self.costs[(prev, x)]
+                tmp_score = r - self.costs[(prev, x), i]
                 if tmp_score > best_score:
                     best_score = tmp_score
                     best_candidate = x

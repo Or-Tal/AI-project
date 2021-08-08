@@ -21,10 +21,11 @@ def randomize_cost(num_cities: int, max_cost: int, revenues: dict) -> dict:
                                 # + (np.random.randint(30, 45) * revenues[y, 0]) // 100  \
                                 # + (np.random.randint(30, 45) * revenues[x, 0]) // 100
 
-    ret = {cities[i]: x for i, x in enumerate(map(get_cost, cities))}
+    ret = {(cities[i], j): x for j in range(num_cities) for i, x in enumerate(map(get_cost, cities))}
     for i in range(num_cities):
-        ret[(-1, i)] = np.random.randint(max(1, max_cost // 10), max_cost) \
-                       # + (np.random.randint(30, 45) * revenues[i]) // 100
+        for j in range(num_cities):
+            ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                           # + (np.random.randint(30, 45) * revenues[i]) // 100
 
     return ret
 
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     # parser.add_argument("--max_cost", default=50, help="max cost for each transition", required=False)
     # parser.add_argument("--max_rev", default=300, help="max cost for each transition", required=False)
     # parser.add_argument("--min_rev", default=50, help="max cost for each transition", required=False)
-    parser.add_argument("--max_cost", default=10000, help="max cost for each transition", required=False)
+    parser.add_argument("--max_cost", default=100000, help="max cost for each transition", required=False)
     parser.add_argument("--max_rev", default=10000000, help="max cost for each transition", required=False)
     parser.add_argument("--min_rev", default=10000, help="max cost for each transition", required=False)
     # parser.add_argument("--save_path", default=None, help="path_to_save_dir/filename.npy", required=False)
