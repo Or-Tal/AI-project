@@ -95,6 +95,7 @@ def parse_args():
                                                             " and run using the generated don't pass anything.\n see "
                                                             "n, max_cost, max_rev, min_rev, save_path arguments")
     parser.add_argument("--algorithm", required=False, help="genetic/optimal/greedy, default=greedy", default=GREEDY)
+    parser.add_argument("--alg_ver", required=False, help="genetic/optimal/greedy, default=greedy", default=1)
     parser.add_argument("--save_name", required=True, help="name of the results file to be saved",
                         default=1)
 

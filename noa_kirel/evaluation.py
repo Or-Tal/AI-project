@@ -15,7 +15,8 @@ Args = namedtuple("args", ['dset_path',
                            'population_size',
                            'tour_length',
                            'elitism_factor',
-                           'save_name'])
+                           'save_name',
+                           'alg_ver'])
 
 
 def run_hyperparams(cur_dset_paths,
@@ -26,9 +27,10 @@ def run_hyperparams(cur_dset_paths,
                     cur_algorithms,
                     cur_tour_lengths=None,
                     cur_elitism_factors=None,
-                    prefix=None):
+                    prefix=None,
+                    ver=1):
     for path in cur_dset_paths:
-        new_path = f"./datasets/{path}"
+        new_path = f"./datasets{'2' if ver == 2 else ''}/{path}"
         num_cities = int(path.split(sep='_')[0])
         if cur_tour_lengths is None:
             cur_tour_lengths = [3, 6]
@@ -55,7 +57,7 @@ def run_hyperparams(cur_dset_paths,
                                         continue
                                     args = Args(new_path, algorithm, 1, 1, p,
                                                 steps_threshold, score_threshold, population_size, length,
-                                                elitism_factor, save_name)
+                                                elitism_factor, save_name, ver)
                                     main_func(args)
 
 
@@ -64,7 +66,7 @@ if __name__ == '__main__':
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
                         "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
                         "400_cities.npy", "500_cities.npy"]
-
+    ver = 2
     p_mutations = [0.1]
     steps_thresholds = [15000]
     score_thresholds = [np.inf]
@@ -74,9 +76,9 @@ if __name__ == '__main__':
     large_elitism_factors = [20, 30]
 
     run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small")
+                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small", ver=ver)
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
                     score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
-                    large_elitism_factors, prefix="large")
+                    large_elitism_factors, prefix="large", ver=ver)
 
