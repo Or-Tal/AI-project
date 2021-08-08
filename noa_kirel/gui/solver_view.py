@@ -56,7 +56,7 @@ class SolverControls(wx.Panel):
     SOLVE_BTN_INACTIVE = 'Solve'
     SOLVE_BTN_ACTIVE = 'Stop'
 
-    def get_solver(self, solver_name, dset: dict, params: dict):
+    def get_solver(self, solver_name, dset: dict, params: dict, ver: int=1):
         if solver_name == GEN:
             ret = self.solvers[solver_name](dset[CITIES],
                                              params[POP_SIZE],
@@ -67,9 +67,9 @@ class SolverControls(wx.Panel):
                                              params[STEPS],
                                              params[MUT_RATE],
                                              params[NUM_ELITE],
-                                             dset[COSTS], dset[REV])
+                                             dset[COSTS], dset[REV], ver=ver)
         else:
-            ret = self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN])
+            ret = self.solvers[solver_name](dset[CITIES], dset[COSTS], dset[REV], params[TOUR_LEN], ver=ver)
         return ret
 
     def __init__(self, parent):

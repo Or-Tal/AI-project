@@ -34,8 +34,9 @@ def randomize_cost(num_cities: int, max_cost: int, revenues: dict, ver: int) -> 
     for i in range(num_cities):
         for j in range(num_cities):
             if ver == 2:
-                ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
-                                      + (np.random.randint(30, 45) * revenues[i, 0])
+                for k in range(num_cities):
+                    ret[(-1, k, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                                          + (np.random.randint(30, 45) * revenues[i, 0])
             ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
                               + (np.random.randint(30, 45) * revenues[i, 0]) // 100
 
@@ -92,8 +93,10 @@ def gen_dset_and_save(num_cities: int,
     """
     generated dataset and save to given path
     """
-    dset = gen_dset(num_cities, max_cost, min_rev, max_rev, ver)
     base_dir, file_name = get_base_dir_and_name(save_path)
+    if os.path.exists("/".join([base_dir, file_name])):
+        return
+    dset = gen_dset(num_cities, max_cost, min_rev, max_rev, ver)
     np.save("/".join([base_dir, file_name]), dset)
     return dset
 

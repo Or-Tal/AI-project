@@ -50,10 +50,12 @@ class GreedySolver(Solver):
             best_candidate = None
 
             # find the best next candidate
+            if self.ver == 2:
+                preprev = -1 if len(sol) < 2 else sol[-2]
             prev = -1 if len(sol) == 0 else sol[-1]
             for x in opts:
                 r = self.rev[x, i] if x not in visited else 0
-                tmp_score = r - self.costs[(prev, x), i]
+                tmp_score = r - self.costs[(prev, x), i] - (self.costs[(preprev, prev, x), i] if self.ver == 2 else 0)
                 if tmp_score > best_score:
                     best_score = tmp_score
                     best_candidate = x

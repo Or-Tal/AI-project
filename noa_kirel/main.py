@@ -38,9 +38,9 @@ def check_args(a, dset):
 
 def get_solver(a, dset):
     if a.algorithm == GREEDY:
-        return GreedySolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
+        return GreedySolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length, a.alg_ver)
     elif a.algorithm == BF_SOL:
-        return BruteForceSolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length)
+        return BruteForceSolver(dset[CITIES], dset[COSTS], dset[REV], a.tour_length, a.alg_ver)
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
         city_selection_func = getattr(city_selection, f"city_selection_{a.city_selection}")
@@ -54,7 +54,7 @@ def get_solver(a, dset):
                              a.p_mutation,
                              a.elitism_factor,
                              dset[COSTS],
-                             dset[REV])
+                             dset[REV], a.alg_ver)
 
 
 def save_results(sol, scores, times, a):

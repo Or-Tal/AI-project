@@ -63,9 +63,11 @@ def run_hyperparams(cur_dset_paths,
 
 if __name__ == '__main__':
     small_dset_paths = ["9_cities.npy", "12_cities.npy", "15_cities.npy"]
+    # large_dset_paths = ["50_cities.npy", "80_cities.npy",
+    #                     "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
+    #                     "400_cities.npy", "500_cities.npy"]
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
-                        "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
-                        "400_cities.npy", "500_cities.npy"]
+                        "100_cities.npy"]
     ver = 2
     p_mutations = [0.1]
     steps_thresholds = [15000]
