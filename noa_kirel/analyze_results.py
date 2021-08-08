@@ -70,7 +70,7 @@ def parse_csv(csv_path, small_cities=False):
             split_path[7] = "bruteForce"
             bf_csv_path = '_'.join(split_path)
             bf_df = pd.read_csv(bf_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
-            bf_max_value = bf_df['scores'].iloc[-1]
+            bf_max_value = bf_df['scores'].max()
             bf_time_achieved = bf_df['times'].iloc[-1]
             df_dict["bf_max_score"] = [bf_max_value]
             df_dict["bf_time_achieved"] = [bf_time_achieved]
