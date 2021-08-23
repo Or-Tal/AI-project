@@ -46,7 +46,8 @@ def run_hyperparams(cur_dset_paths,
                     for i4, steps_threshold in enumerate(cur_steps_thresholds):
                         for i5, score_threshold in enumerate(cur_score_thresholds):
                             for algorithm in cur_algorithms:
-                                if algorithm != GEN and (i1 != 0 or i2 != 0 or i3 != 0 or i4 != 0 or i5 != 0):
+                                if (algorithm != GEN and algorithm != GEN2) and \
+                                        (i1 != 0 or i2 != 0 or i3 != 0 or i4 != 0 or i5 != 0):
                                     continue
                                 for length in cur_tour_lengths:
                                     save_name = f"{f'{prefix}/' if prefix is not None else ''}num_cities_" \
@@ -63,12 +64,13 @@ def run_hyperparams(cur_dset_paths,
 
 if __name__ == '__main__':
     small_dset_paths = ["9_cities.npy", "12_cities.npy", "15_cities.npy"]
+
     # large_dset_paths = ["50_cities.npy", "80_cities.npy",
     #                     "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
     #                     "400_cities.npy", "500_cities.npy"]
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
                         "100_cities.npy"]
-    ver = 2
+    ver = 1
     p_mutations = [0.1]
     steps_thresholds = [15000]
     score_thresholds = [np.inf]
@@ -78,9 +80,9 @@ if __name__ == '__main__':
     large_elitism_factors = [20, 30]
 
     run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, small_population_sizes, [GEN, GREEDY, BF_SOL], prefix="small", ver=ver)
+                    score_thresholds, small_population_sizes, [GEN2], prefix="small", ver=ver)
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, large_population_sizes, [GEN, GREEDY], large_tour_lengths,
+                    score_thresholds, large_population_sizes, [GEN2], large_tour_lengths,
                     large_elitism_factors, prefix="large", ver=ver)
 

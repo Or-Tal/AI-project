@@ -9,6 +9,7 @@ from noa_kirel.generate_dataset import main_gen_func
 from noa_kirel.solvers.greedy_solver import GreedySolver
 from noa_kirel.solvers.brute_force_solver import BruteForceSolver
 from noa_kirel.solvers.genetic_solver import GeneticSolver
+from noa_kirel.solvers.genetic_non_duplicate_solver import GeneticNonDuplicatesSolver
 
 
 def load_dset(dset_path: str, a: argparse.ArgumentParser) -> object:
@@ -30,7 +31,7 @@ def check_args(a, dset):
     :param a:
     :return:
     """
-    if a.algorithm == GEN:
+    if a.algorithm == GEN or a.algorithm == GEN2:
         if a.p_mutation < 0 or a.p_mutation > 1 or \
            a.tour_length > dset[CITIES] or a.elitism_factor > a.population_size:
             raise ValueError("invalid hyper-parameters were given to genetic algorithm initializer")
@@ -44,17 +45,30 @@ def get_solver(a, dset):
     else:
         partition_func = getattr(partition, f"partition_{a.partition}")
         city_selection_func = getattr(city_selection, f"city_selection_{a.city_selection}")
-        return GeneticSolver(dset[CITIES],
-                             a.population_size,
-                             a.tour_length,
-                             partition_func,
-                             city_selection_func,
-                             a.score_th,
-                             a.step_th,
-                             a.p_mutation,
-                             a.elitism_factor,
-                             dset[COSTS],
-                             dset[REV], a.alg_ver)
+        if a.algorithm == GEN:
+            return GeneticSolver(dset[CITIES],
+                                 a.population_size,
+                                 a.tour_length,
+                                 partition_func,
+                                 city_selection_func,
+                                 a.score_th,
+                                 a.step_th,
+                                 a.p_mutation,
+                                 a.elitism_factor,
+                                 dset[COSTS],
+                                 dset[REV], a.alg_ver)
+        else:
+            return GeneticNonDuplicatesSolver(dset[CITIES],
+                                              a.population_size,
+                                              a.tour_length,
+                                              partition_func,
+                                              city_selection_func,
+                                              a.score_th,
+                                              a.step_th,
+                                              a.p_mutation,
+                                              a.elitism_factor,
+                                              dset[COSTS],
+                                              dset[REV], a.alg_ver)
 
 
 def save_results(sol, scores, times, a):
