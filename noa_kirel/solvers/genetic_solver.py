@@ -97,36 +97,6 @@ class GeneticSolver(Solver):
         self._ver = ver
 
 
-
-    def fitness_function(self):
-        def fitness_function(solution):
-            """
-            Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
-            and the transfer cost from city to city
-            :param solution: ndarray representing the tour
-            :return: total revenue from the solution tour
-            """
-            if solution is None or solution.size == 0:
-                return 0
-
-            visited = set()
-            fitness = 0
-            if ver == 2:
-                preprev = INITIAL_CITY
-            prev = INITIAL_CITY
-
-            for i, cur_city in enumerate(solution):
-                cur_rev = city_rev[(cur_city, i)] if cur_city not in visited else 0
-                fitness += (cur_rev - transfer_costs[(prev, cur_city), i]
-                            - (transfer_costs[(preprev, prev, cur_city), i] if ver == 2 else 0))
-                if ver == 2:
-                    preprev = prev
-                prev = cur_city
-                visited.add(cur_city)
-
-            return fitness
-
-
     @staticmethod
     def __get_fitness_function(transfer_costs, city_rev, ver):
         """
