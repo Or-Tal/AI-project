@@ -3,6 +3,7 @@ CITIES = "num_cities"
 COSTS = "costs_by_city_x_city"
 REV = "revenue_by_city"
 GEN = "genetic"
+GEN2 = "genetic_non_duplicates"
 # todo kick out optimal and replace by brute force
 OPT = "optimal"
 GREEDY = "greedy"
