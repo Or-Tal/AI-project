@@ -32,7 +32,6 @@ def run_hyperparams(cur_dset_paths,
                     cur_elitism_factors=None,
                     prefix=None,
                     ver=1):
-    os.makedirs(f"./results_{ver}_2{RESULT_SUFFIX}", exist_ok=True)
     for path in cur_dset_paths:
         new_path = f"./datasets{'02' if ver == 2 else '01'}/{path}"
         # new_path = f"./datasets{'2' if ver == 2 else '1'}/{path}"
@@ -59,7 +58,7 @@ def run_hyperparams(cur_dset_paths,
                                     save_name = f"{f'{prefix}/' if prefix is not None else ''}num_cities_" \
                                                 f"{num_cities}_p_{p}_population_{population_size}_" \
                                                 f"{algorithm}_elitism_{elitism_factor}_len_{length}"
-                                    if os.path.exists(f"./results_{ver}_{RESULT_SUFFIX}/{save_name}.png"):
+                                    if os.path.exists(f"./results/{save_name}.png"):
                                         print(f"skipping: {save_name}")
                                         continue
                                     args = Args(new_path, algorithm, 1, 1, p,
@@ -78,7 +77,7 @@ if __name__ == '__main__':
     large_dset_paths = ["50_cities.npy", "100_cities.npy"]
     # large_dset_paths = ["50_cities.npy", "80_cities.npy", "100_cities.npy"]
     # ver = 1
-    for ver in [1, 2]:
+    for ver in [1]:
         p_mutations = [0.1]
         # p_mutations = [0.02, 0.1]
         steps_thresholds = [15000]
