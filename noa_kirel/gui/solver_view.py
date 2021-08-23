@@ -566,8 +566,6 @@ class TSPView(wx.Panel):
             if len(b) > 1:
                 self._draw_path(dc, self._state[0], self.CURRENT_COLOR)
 
-
-
         # Draw cities
         dc.SetPen(wx.Pen(self.CITY_COLOR))
         dc.SetBrush(wx.Brush(self.CITY_COLOR))
