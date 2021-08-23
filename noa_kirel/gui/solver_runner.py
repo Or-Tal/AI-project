@@ -49,7 +49,7 @@ class SolverRunner(threading.Thread):
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
 
     def run(self):
-        """Creates a process wich runs the solver.
+        """Creates a process which runs the solver.
         """
 
         # Start solver process

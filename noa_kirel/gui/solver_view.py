@@ -586,7 +586,7 @@ class TSPView(wx.Panel):
         """Handles resize event.
         """
 
-        self.calculate_points()
+        # self.calculate_points()
 
     def _on_tsp_change(self, tsp):
         """Handles TSP change event.
@@ -638,7 +638,7 @@ class TSPView(wx.Panel):
         """
 
         self._tsp = tsp
-        self.calculate_points()
+        # self.calculate_points()
         self.Refresh()
 
     def set_state(self, state):

@@ -14,6 +14,7 @@ class SolverStats(wx.Panel):
         self.results = []
 
         self._init_ui()
+        self.parent = parent
 
     def _init_ui(self):
         """Builds GUI.
@@ -53,7 +54,8 @@ class SolverStats(wx.Panel):
         #                          title='Best path distance over time',
         #                          xLabel='Time [ns]', yLabel='Distance')
 
-        current_points = [(r[2], r[0]) for r in self.results]
+        current_points = [self.TopLevelParent.solver_view.tsp_view._points[x] for x in self.results[-1][0]] if len(self.results) > 0 else []
+        # current_points = [(r[2], r[0]) for r in self.results]
         if len(current_points) > 0:
             current_line = PolyLine(current_points)
             current_plot = PlotGraphics([current_line],
