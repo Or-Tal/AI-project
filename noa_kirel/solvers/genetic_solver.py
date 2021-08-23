@@ -43,8 +43,7 @@ class GeneticSolver(Solver):
         self.__num_cities = num_cities
         self.__population_size = population_size
         self.__tour_length = tour_length
-        self.__ver = ver
-        self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs)
+        self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs, ver)
         self.__partition_func = partition_func
         self.__city_selection_func = city_selection_func
         self.__score_threshold = score_threshold
@@ -53,6 +52,7 @@ class GeneticSolver(Solver):
         self.__elitism_factor = elitism_factor
         self.__initial_population = self.__get_init_population()
         self.name = "genetic"
+        self.__ver = ver
 
     @staticmethod
     def __get_fitness_function(transfer_costs, city_rev, ver):
