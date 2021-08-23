@@ -561,6 +561,7 @@ class TSPView(wx.Panel):
         # Draw state if it's defined
         if self._state:
             # Draw current path if there's no best even if it's disabled
+            self._draw_path(dc, self._state[-3], self.BEST_COLOR)
             b = np.nonzero(np.array(self._state[-3]) - np.array(self._state[0]))[0]
             if len(b) > 1:
                 self._draw_path(dc, self._state[0], self.CURRENT_COLOR)
