@@ -38,7 +38,7 @@ def run_hyperparams(cur_dset_paths,
 
         for i1, population_size in enumerate(cur_population_sizes):
             if cur_elitism_factors is None:
-                cur_elitism_factors = [1, 3] if population_size % 2 == 1 else [2]
+                cur_elitism_factors = [1] if population_size % 2 == 1 else [2]
             for i2, elitism_factor in enumerate(cur_elitism_factors):
                 if population_size <= elitism_factor:
                     continue
@@ -63,7 +63,8 @@ def run_hyperparams(cur_dset_paths,
 
 
 if __name__ == '__main__':
-    small_dset_paths = ["9_cities.npy", "12_cities.npy", "15_cities.npy"]
+    small_dset_paths = ["9_cities.npy", "12_cities.npy"]
+    # small_dset_paths = ["9_cities.npy", "12_cities.npy", "15_cities.npy"]
 
     # large_dset_paths = ["50_cities.npy", "80_cities.npy",
     #                     "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
@@ -71,10 +72,12 @@ if __name__ == '__main__':
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
                         "100_cities.npy"]
     ver = 1
-    p_mutations = [0.02, 0.1]
+    p_mutations = [0.1]
+    # p_mutations = [0.02, 0.1]
     steps_thresholds = [15000]
     score_thresholds = [np.inf]
-    small_population_sizes = [7, 10, 20, 50]
+    small_population_sizes = [50]
+    # small_population_sizes = [7, 10, 20, 50]
     large_population_sizes = [150]
     large_tour_lengths = [30]
     # large_tour_lengths = [30, 50]
