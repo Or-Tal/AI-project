@@ -22,7 +22,8 @@ class GeneticSolver(Solver):
                  mutate_p,
                  elitism_factor,
                  transfer_costs,
-                 city_revs):
+                 city_revs,
+                 ver=1):
         """
         Initializer for the genetic solver
         :param num_cities: number of possible cities for performing
@@ -42,7 +43,7 @@ class GeneticSolver(Solver):
         self.__num_cities = num_cities
         self.__population_size = population_size
         self.__tour_length = tour_length
-        self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs)
+        self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs, ver)
         self.__partition_func = partition_func
         self.__city_selection_func = city_selection_func
         self.__score_threshold = score_threshold
@@ -51,9 +52,10 @@ class GeneticSolver(Solver):
         self.__elitism_factor = elitism_factor
         self.__initial_population = self.__get_init_population()
         self.name = "genetic"
+        self.__ver = ver
 
     @staticmethod
-    def __get_fitness_function(transfer_costs, city_rev):
+    def __get_fitness_function(transfer_costs, city_rev, ver):
         """
         Fitness function factory
         :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
@@ -73,11 +75,16 @@ class GeneticSolver(Solver):
 
             visited = set()
             fitness = 0
+            if ver == 2:
+                preprev = INITIAL_CITY
             prev = INITIAL_CITY
 
             for i, cur_city in enumerate(solution):
                 cur_rev = city_rev[(cur_city, i)] if cur_city not in visited else 0
-                fitness += (cur_rev - transfer_costs[(prev, cur_city), i])
+                fitness += (cur_rev - transfer_costs[(prev, cur_city), i]
+                            - (transfer_costs[(preprev, prev, cur_city), i] if ver == 2 else 0))
+                if ver == 2:
+                    preprev = prev
                 prev = cur_city
                 visited.add(cur_city)
 
