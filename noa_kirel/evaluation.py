@@ -71,8 +71,8 @@ if __name__ == '__main__':
     large_dset_paths = ["50_cities.npy", "80_cities.npy",
                         "100_cities.npy"]
     ver = 1
-    p_mutations = [0.1]
-    steps_thresholds = [100000]
+    p_mutations = [0.02, 0.1]
+    steps_thresholds = [15000]
     score_thresholds = [np.inf]
     small_population_sizes = [7, 10, 20, 50]
     large_population_sizes = [150]
