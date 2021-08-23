@@ -6,46 +6,6 @@ from time import time
 INITIAL_CITY = -1
 
 
-def _get_fitness_function(transfer_costs, city_rev, ver):
-    """
-    Fitness function factory
-    :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
-    :param city_rev: python dictionary - {city : revenue}
-    :return: a fitness function according to the revenue and cost function
-    """
-
-    def fitness_function(solution):
-        """
-        Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
-        and the transfer cost from city to city
-        :param solution: ndarray representing the tour
-        :return: total revenue from the solution tour
-        """
-        if solution is None or solution.size == 0:
-            return 0
-
-        visited = set()
-        fitness = 0
-        if ver == 2:
-            preprev = INITIAL_CITY
-        prev = INITIAL_CITY
-
-        for i, cur_city in enumerate(solution):
-            cur_rev = city_rev[
-                (cur_city, i)] if cur_city not in visited else 0
-            fitness += (cur_rev - transfer_costs[(prev, cur_city), i]
-                        - (transfer_costs[(preprev, prev,
-                                           cur_city), i] if ver == 2 else 0))
-            if ver == 2:
-                preprev = prev
-            prev = cur_city
-            visited.add(cur_city)
-
-        return fitness
-
-    return fitness_function
-
-
 class GeneticSolver(Solver):
     """
     A class for a Genetic algorithm solver for the tour planning problem
@@ -83,57 +43,83 @@ class GeneticSolver(Solver):
         self.__num_cities = num_cities
         self.__population_size = population_size
         self.__tour_length = tour_length
-        self.__fitness_func = _get_fitness_function(transfer_costs, city_revs, ver)
-        self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs, ver)
-        self._transfer_costs = transfer_costs
-        self._partition_func = partition_func
-        self._city_selection_func = city_selection_func
-        self._score_threshold = score_threshold
-        self._steps_threshold = steps_threshold
-        self._mutate_p = mutate_p
-        self._elitism_factor = elitism_factor
-        self._initial_population = self.__get_init_population()
+        # self.__fitness_func = self.__get_fitness_function(transfer_costs, city_revs, ver)
+        self.__partition_func = partition_func
+        self.__city_selection_func = city_selection_func
+        self.__score_threshold = score_threshold
+        self.__steps_threshold = steps_threshold
+        self.__mutate_p = mutate_p
+        self.__elitism_factor = elitism_factor
+        self.__initial_population = self.__get_init_population()
         self.name = "genetic"
-        self._ver = ver
+        self.__ver = ver
+        self.__city_rev = city_revs
+        self.__transfer_costs = transfer_costs
 
-
-    @staticmethod
-    def __get_fitness_function(transfer_costs, city_rev, ver):
+    def fitness_function(self, solution):
         """
-        Fitness function factory
-        :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
-        :param city_rev: python dictionary - {city : revenue}
-        :return: a fitness function according to the revenue and cost function
+        Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
+        and the transfer cost from city to city
+        :param solution: ndarray representing the tour
+        :return: total revenue from the solution tour
         """
+        if solution is None or solution.size == 0:
+            return 0
 
-        def fitness_function(solution):
-            """
-            Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
-            and the transfer cost from city to city
-            :param solution: ndarray representing the tour
-            :return: total revenue from the solution tour
-            """
-            if solution is None or solution.size == 0:
-                return 0
+        visited = set()
+        fitness = 0
+        if self.__ver == 2:
+            preprev = INITIAL_CITY
+        prev = INITIAL_CITY
 
-            visited = set()
-            fitness = 0
-            if ver == 2:
-                preprev = INITIAL_CITY
-            prev = INITIAL_CITY
+        for i, cur_city in enumerate(solution):
+            cur_rev = self.__city_rev[(cur_city, i)] if cur_city not in visited else 0
+            fitness += (cur_rev - self.__transfer_costs[(prev, cur_city), i]
+                        - (self.__transfer_costs[(preprev, prev, cur_city), i] if self.__ver == 2 else 0))
+            if self.__ver == 2:
+                preprev = prev
+            prev = cur_city
+            visited.add(cur_city)
 
-            for i, cur_city in enumerate(solution):
-                cur_rev = city_rev[(cur_city, i)] if cur_city not in visited else 0
-                fitness += (cur_rev - transfer_costs[(prev, cur_city), i]
-                            - (transfer_costs[(preprev, prev, cur_city), i] if ver == 2 else 0))
-                if ver == 2:
-                    preprev = prev
-                prev = cur_city
-                visited.add(cur_city)
+        return fitness
 
-            return fitness
-
-        return fitness_function
+    # @staticmethod
+    # def __get_fitness_function(transfer_costs, city_rev, ver):
+    #     """
+    #     Fitness function factory
+    #     :param transfer_costs: python dictionary - {(src, dst) : transfer cost}
+    #     :param city_rev: python dictionary - {city : revenue}
+    #     :return: a fitness function according to the revenue and cost function
+    #     """
+    #
+    #     def fitness_function(solution):
+    #         """
+    #         Fitness function for the genetic algorithm for the singer's tour, taking in consideration the city's revenue
+    #         and the transfer cost from city to city
+    #         :param solution: ndarray representing the tour
+    #         :return: total revenue from the solution tour
+    #         """
+    #         if solution is None or solution.size == 0:
+    #             return 0
+    #
+    #         visited = set()
+    #         fitness = 0
+    #         if ver == 2:
+    #             preprev = INITIAL_CITY
+    #         prev = INITIAL_CITY
+    #
+    #         for i, cur_city in enumerate(solution):
+    #             cur_rev = city_rev[(cur_city, i)] if cur_city not in visited else 0
+    #             fitness += (cur_rev - transfer_costs[(prev, cur_city), i]
+    #                         - (transfer_costs[(preprev, prev, cur_city), i] if ver == 2 else 0))
+    #             if ver == 2:
+    #                 preprev = prev
+    #             prev = cur_city
+    #             visited.add(cur_city)
+    #
+    #         return fitness
+    #
+    #     return fitness_function
 
     def __get_init_population(self):
         """
@@ -182,7 +168,8 @@ class GeneticSolver(Solver):
         :param population: 2d-array of solutions
         :return: 1d-array of scores
         """
-        return np.array([self.__fitness_func(solution) for solution in population])
+        return np.array([self.fitness_function(solution) for solution in population])
+        # return np.array([self.__fitness_func(solution) for solution in population])
 
     @staticmethod
     def __selection_func(scores):
