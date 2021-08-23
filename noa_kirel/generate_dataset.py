@@ -35,16 +35,16 @@ def randomize_cost(num_cities: int, max_cost: int, revenues: dict, ver: int) -> 
     for i in range(num_cities):
         for j in range(num_cities):
             if ver == 2:
-                ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
-                # ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
-                #                      + (np.random.randint(30, 45) * revenues[i, 0])
+                # ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
+                ret[(-1, -1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                                     + (np.random.randint(30, 45) * revenues[i, 0])
                 for k in range(num_cities):
-                    ret[(-1, k, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
-                    # ret[(-1, k, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
-                    #                      + (np.random.randint(30, 45) * revenues[i, 0])
-            ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
-            # ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
-            #                   + (np.random.randint(30, 45) * revenues[i, 0]) // 100
+                    # ret[(-1, k, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
+                    ret[(-1, k, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                                         + (np.random.randint(30, 45) * revenues[i, 0])
+            # ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost)
+            ret[(-1, i), j] = np.random.randint(max(1, max_cost // 10), max_cost) \
+                              + (np.random.randint(30, 45) * revenues[i, 0]) // 100
 
     return ret
 
@@ -120,8 +120,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--n", default=100, help="num_of_cities", required=False)
     parser.add_argument("--ver", default=1, help="version", required=False)
-    parser.add_argument("--max_cost", default=25000, help="max cost for each transition", required=False)
-    parser.add_argument("--max_rev", default=50000, help="max cost for each transition", required=False)
+    parser.add_argument("--max_cost", default=25000000, help="max cost for each transition", required=False)
+    parser.add_argument("--max_rev", default=50000000, help="max cost for each transition", required=False)
     parser.add_argument("--min_rev", default=10000, help="max cost for each transition", required=False)
     # parser.add_argument("--max_cost", default=100000, help="max cost for each transition", required=False)
     # parser.add_argument("--max_rev", default=10000000, help="max cost for each transition", required=False)

@@ -1,9 +1,12 @@
 import numpy as np
 from collections import namedtuple
+# from noa_kirel.main import main_func
+# from noa_kirel.constants import *
 from noa_kirel.main import main_func
 from noa_kirel.constants import *
 import os
 
+RESULT_SUFFIX = '2'
 
 Args = namedtuple("args", ['dset_path',
                            'algorithm',
@@ -30,7 +33,9 @@ def run_hyperparams(cur_dset_paths,
                     prefix=None,
                     ver=1):
     for path in cur_dset_paths:
-        new_path = f"./datasets{'2' if ver == 2 else ''}/{path}"
+        new_path = f"./datasets{'02' if ver == 2 else '01'}/{path}"
+        # new_path = f"./datasets{'2' if ver == 2 else '1'}/{path}"
+        # new_path = f"./datasets{'2' if ver == 2 else ''}/{path}"
         num_cities = int(path.split(sep='_')[0])
         if cur_tour_lengths is None:
             cur_tour_lengths = [3, 6]
@@ -69,24 +74,26 @@ if __name__ == '__main__':
     # large_dset_paths = ["50_cities.npy", "80_cities.npy",
     #                     "100_cities.npy", "150_cities.npy", "200_cities.npy", "300_cities.npy",
     #                     "400_cities.npy", "500_cities.npy"]
-    large_dset_paths = ["50_cities.npy", "80_cities.npy",
-                        "100_cities.npy"]
-    ver = 1
-    p_mutations = [0.1]
-    # p_mutations = [0.02, 0.1]
-    steps_thresholds = [15000]
-    score_thresholds = [np.inf]
-    small_population_sizes = [50]
-    # small_population_sizes = [7, 10, 20, 50]
-    large_population_sizes = [150]
-    large_tour_lengths = [30]
-    # large_tour_lengths = [30, 50]
-    large_elitism_factors = [30]
+    large_dset_paths = ["50_cities.npy"]
+    # large_dset_paths = ["50_cities.npy", "100_cities.npy"]
+    # large_dset_paths = ["50_cities.npy", "80_cities.npy", "100_cities.npy"]
+    # ver = 1
+    for ver in [1]:
+        p_mutations = [0.1]
+        # p_mutations = [0.02, 0.1]
+        steps_thresholds = [15000]
+        score_thresholds = [np.inf]
+        small_population_sizes = [50]
+        # small_population_sizes = [7, 10, 20, 50]
+        large_population_sizes = [150]
+        large_tour_lengths = [50]
+        # large_tour_lengths = [30, 50]
+        large_elitism_factors = [30]
 
-    run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, small_population_sizes, [GEN, GEN2, OPT, GREEDY], prefix="small", ver=ver)
+        # run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
+        #                 score_thresholds, small_population_sizes, [GEN, GEN2, OPT, GREEDY], prefix="small", ver=ver)
 
-    run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, large_population_sizes, [GEN, GEN2, GREEDY], large_tour_lengths,
-                    large_elitism_factors, prefix="large", ver=ver)
+        run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
+                        score_thresholds, large_population_sizes, [GEN, GEN2, GREEDY], large_tour_lengths,
+                        large_elitism_factors, prefix="large", ver=ver)
 

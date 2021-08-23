@@ -561,11 +561,10 @@ class TSPView(wx.Panel):
         # Draw state if it's defined
         if self._state:
             # Draw current path if there's no best even if it's disabled
+            self._draw_path(dc, self._state[-3], self.BEST_COLOR)
             b = np.nonzero(np.array(self._state[-3]) - np.array(self._state[0]))[0]
             if len(b) > 1:
                 self._draw_path(dc, self._state[0], self.CURRENT_COLOR)
-
-
 
         # Draw cities
         dc.SetPen(wx.Pen(self.CITY_COLOR))
@@ -587,7 +586,7 @@ class TSPView(wx.Panel):
         """Handles resize event.
         """
 
-        self.calculate_points()
+        # self.calculate_points()
 
     def _on_tsp_change(self, tsp):
         """Handles TSP change event.
@@ -639,7 +638,7 @@ class TSPView(wx.Panel):
         """
 
         self._tsp = tsp
-        self.calculate_points()
+        # self.calculate_points()
         self.Refresh()
 
     def set_state(self, state):

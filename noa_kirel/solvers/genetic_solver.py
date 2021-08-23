@@ -159,9 +159,9 @@ class GeneticSolver(Solver):
             flag, best_solution, best_score = self.__get_best_solution(new_population, scores, step)
             step += 1
             population = new_population
-            yield best_solution, best_score, time() - start, (step - 1) / self.__steps_threshold
+            yield best_solution, best_score, time() - start, best_solution, best_score, (step - 1) / self.__steps_threshold
 
-        return best_solution, best_score, time() - start, 1
+        return best_solution, best_score, time() - start, best_solution, best_score, 1
 
     def __get_scores(self, population):
         """

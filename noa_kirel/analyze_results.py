@@ -45,12 +45,17 @@ def parse_csv(csv_path, small_cities=False):
     gen_first_max_iteration = genetic_df['scores'].argmax()
     gen_max_value = genetic_df['scores'].max()
     gen_time_achieved = genetic_df['times'].iloc[gen_first_max_iteration]
-
-    split_path[7] = GEN2
-    genetic2_df = pd.read_csv(csv_path).rename(columns={"Unnamed: 0": 'iteration'})
-    gen2_first_max_iteration = genetic2_df['scores'].argmax()
-    gen2_max_value = genetic2_df['scores'].max()
-    gen2_time_achieved = genetic2_df['times'].iloc[gen2_first_max_iteration]
+    try:
+        split_path[7] = GEN2
+        gen2_csv_path = '_'.join(split_path)
+        genetic2_df = pd.read_csv(gen2_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+        gen2_first_max_iteration = genetic2_df['scores'].argmax()
+        gen2_max_value = genetic2_df['scores'].max()
+        gen2_time_achieved = genetic2_df['times'].iloc[gen2_first_max_iteration]
+    except FileNotFoundError:
+        gen2_first_max_iteration = pd.NA
+        gen2_max_value = pd.NA
+        gen2_time_achieved = pd.NA
 
     split_path[7] = GREEDY
     greedy_csv_path = '_'.join(split_path)
@@ -59,7 +64,6 @@ def parse_csv(csv_path, small_cities=False):
         greedy_max_value = greedy_df['scores'].iloc[-1]
     except FileNotFoundError:
         greedy_max_value = pd.NA
-
 
     df_dict = {"num_cities": [num_cities],
                "tour_length": [tour_length],
@@ -109,7 +113,7 @@ def analyze_small_dataset():
 
 if __name__ == '__main__':
     fix("results/small")
-    analyze_small_dataset()
-    # analyze_large_dataset()
+    # analyze_small_dataset()
+    analyze_large_dataset()
 
 

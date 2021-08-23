@@ -66,7 +66,7 @@ class GreedySolver(Solver):
             score = self.score(sol)
 
             # generator case
-            yield sol, score, time() - start_time, sol, score, (i + 1) / self.n
+            yield sol, score, time() - start_time, sol, score, sol, score, (i + 1) / self.n
 
         # return greedy solution
         return sol, score, time() - start_time, sol, score, 1
