@@ -76,7 +76,8 @@ def parse_csv(csv_path, small_cities=False):
                "greedy_max_score": [greedy_max_value]}
     if small_cities:
         try:
-            split_path[7] = "bruteForce"
+            split_path[7] = OPT
+            # split_path[7] = "bruteForce"
             bf_csv_path = '_'.join(split_path)
             bf_df = pd.read_csv(bf_csv_path).rename(columns={"Unnamed: 0": 'iteration'})
             bf_max_value = bf_df['scores'].max()
@@ -91,24 +92,24 @@ def parse_csv(csv_path, small_cities=False):
 
 
 def analyze_large_dataset():
-    files = get_csvs("results/ver1/large")
-    all_concatenated = pd.concat([parse_csv(f"results/ver1/large/{file}") for file in files])
+    files = get_csvs("results/large")
+    all_concatenated = pd.concat([parse_csv(f"results/large/{file}") for file in files])
     all_concatenated = all_concatenated.sort_values(by=['num_cities', 'tour_length', 'population_size',
                                                         'elitism_factor', 'p_mutant'])
     all_concatenated.to_csv(f"results/large/{ANALYZE_LARGE_PATH}", index=False)
 
 
 def analyze_small_dataset():
-    files = get_csvs('results/ver1/small')
-    all_concatenated = pd.concat([parse_csv(f"results/ver1/small/{file}", small_cities=True) for file in files])
+    files = get_csvs('results/small')
+    all_concatenated = pd.concat([parse_csv(f"results/small/{file}", small_cities=True) for file in files])
     all_concatenated = all_concatenated.sort_values(by=['num_cities', 'tour_length', 'population_size',
                                                         'elitism_factor', 'p_mutant'])
     all_concatenated.to_csv(f"results/small/{ANALYZE_SMALL_PATH}", index=False)
 
 
 if __name__ == '__main__':
-    fix("results/ver1/small")
-    # analyze_small_dataset()
-    analyze_large_dataset()
+    fix("results/small")
+    analyze_small_dataset()
+    # analyze_large_dataset()
 
 
