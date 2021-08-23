@@ -72,17 +72,18 @@ if __name__ == '__main__':
                         "100_cities.npy"]
     ver = 1
     p_mutations = [0.1]
-    steps_thresholds = [15000]
+    steps_thresholds = [100000]
     score_thresholds = [np.inf]
     small_population_sizes = [7, 10, 20, 50]
     large_population_sizes = [150]
-    large_tour_lengths = [30, 50]
-    large_elitism_factors = [20, 30]
+    large_tour_lengths = [30]
+    # large_tour_lengths = [30, 50]
+    large_elitism_factors = [30]
 
     run_hyperparams(small_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, small_population_sizes, [GEN2], prefix="small", ver=ver)
+                    score_thresholds, small_population_sizes, [GEN, GEN2, OPT, GREEDY], prefix="small", ver=ver)
 
     run_hyperparams(large_dset_paths, p_mutations, steps_thresholds,
-                    score_thresholds, large_population_sizes, [GEN2], large_tour_lengths,
+                    score_thresholds, large_population_sizes, [GEN, GEN2, GREEDY], large_tour_lengths,
                     large_elitism_factors, prefix="large", ver=ver)
 

@@ -200,7 +200,7 @@ class GeneticNonDuplicatesSolver(Solver):
             population[random_idxs_to_be_mutated[i]] = gen
 
         duplicate_idxs = self.__sols_with_duplicates(population)
-        genes_to_be_mutated = population[duplicate_idxs]
+        genes_to_be_mutated = list() if len(duplicate_idxs) == 0 else population[duplicate_idxs]
         for i in range(len(genes_to_be_mutated)):
             gen = genes_to_be_mutated[i]
             duplicates = np.delete(np.arange(len(gen)), np.unique(gen, return_index=True)[1])

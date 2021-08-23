@@ -7,18 +7,20 @@ ANALYZE_SMALL_PATH = "analyzed_small_results.csv"
 ANALYZE_LARGE_PATH = "analyzed_large_results.csv"
 
 COLS_LARGE_CITY = ["num_cities", "tour_length", "population_size", "elitism_factor", "p_mutant",
-                   "genetic_time_achieved", "genetic_first_max_iteration", "bf_num_iterations",
-                   "genetic_max_score", "greedy_max_score"]
+                   "genetic_time_achieved", "genetic_first_max_iteration", "genetic2_time_achieved",
+                   "genetic2_first_max_iteration", "bf_num_iterations",
+                   "genetic_max_score", "genetic2_max_score", "greedy_max_score"]
 
 COLS_SMALL_CITY = ["num_cities", "tour_length", "population_size", "elitism_factor", "p_mutant",
-                   "genetic_time_achieved", "genetic_first_max_iteration", "bf_num_iterations",
-                   "genetic_max_score", "greedy_max_score", "bf_max_score"]
+                   "genetic_time_achieved", "genetic_first_max_iteration", "genetic2_time_achieved",
+                   "genetic2_first_max_iteration", "bf_num_iterations",
+                   "genetic_max_score", "genetic2_max_score", "greedy_max_score", "bf_max_score"]
 
 
 def is_interesting(filename):
-    if filename == ANALYZE_SMALL_PATH or filename == ANALYZE_LARGE_PATH:
-        return False
     split_path = filename.split('_')
+    if filename == ANALYZE_SMALL_PATH or filename == ANALYZE_LARGE_PATH or len(split_path) < 12:
+        return False
     algorithm = split_path[7]
     return filename[-3:] == 'csv' and algorithm == GEN
 
@@ -44,6 +46,12 @@ def parse_csv(csv_path, small_cities=False):
     gen_max_value = genetic_df['scores'].max()
     gen_time_achieved = genetic_df['times'].iloc[gen_first_max_iteration]
 
+    split_path[7] = GEN2
+    genetic2_df = pd.read_csv(csv_path).rename(columns={"Unnamed: 0": 'iteration'})
+    gen2_first_max_iteration = genetic2_df['scores'].argmax()
+    gen2_max_value = genetic2_df['scores'].max()
+    gen2_time_achieved = genetic2_df['times'].iloc[gen2_first_max_iteration]
+
     split_path[7] = GREEDY
     greedy_csv_path = '_'.join(split_path)
     try:
@@ -52,17 +60,20 @@ def parse_csv(csv_path, small_cities=False):
     except FileNotFoundError:
         greedy_max_value = pd.NA
 
+
     df_dict = {"num_cities": [num_cities],
                "tour_length": [tour_length],
                "population_size": [population_size],
                "elitism_factor": [elitism_factor],
                "p_mutant": [p_mutant],
                "genetic_first_max_iteration": [gen_first_max_iteration],
+               "genetic2_first_max_iteration": [gen2_first_max_iteration],
                "bf_num_iterations": [num_cities ** tour_length],
                "genetic_time_achieved": [gen_time_achieved],
                "genetic_max_score": [gen_max_value],
+               "genetic2_time_achieved": [gen2_time_achieved],
+               "genetic2_max_score": [gen2_max_value],
                "greedy_max_score": [greedy_max_value]}
-
     if small_cities:
         try:
             split_path[7] = "bruteForce"
@@ -98,6 +109,6 @@ def analyze_small_dataset():
 if __name__ == '__main__':
     fix("results/ver1/small")
     analyze_small_dataset()
-    analyze_large_dataset()
+    # analyze_large_dataset()
 
 
