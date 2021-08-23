@@ -197,11 +197,11 @@ class SolverControls(wx.Panel):
         result_panel.SetSizer(result_sizer)
         res_box_sizer.Add(result_panel, 1)
 
-        # Error
+        # #Error
         # error_label = wx.StaticText(result_panel, label='Error:')
         # result_sizer.Add(error_label, (1, 0), (0, 1),
         #                  wx.ALIGN_CENTER_VERTICAL | borders('bl'), 10)
-        #self.error = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
+        # self.error = wx.StaticText(result_panel, label=self.DEFAULT_RESULT)
         # self.error.SetFont(result_font)
         # result_sizer.Add(self.error, (1, 1), (0, 1),
         #                  wx.ALIGN_CENTER_VERTICAL | borders('br'), 10)
@@ -224,8 +224,8 @@ class SolverControls(wx.Panel):
         population_size = wx.StaticText(props_box, label='Population size')
         props_sizer.Add(population_size, (0, 1), (1, 1),
                         wx.EXPAND | borders('r'), 10)
-        self.population_size = wx.Slider(props_box, value=1, minValue=1,
-                                       maxValue=1000,
+        self.population_size = wx.Slider(props_box, value=5, minValue=5,
+                                       maxValue=100,
                                        style=wx.SL_LABELS)
         props_sizer.Add(self.population_size, (1, 1), (1, 1),
                         wx.EXPAND | borders('r'), 10)
@@ -253,8 +253,8 @@ class SolverControls(wx.Panel):
         tour_len = wx.StaticText(props_box, label='Tour length')
         props_sizer.Add(tour_len, (4, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
-        self.tour_len = wx.Slider(props_box, value=1, minValue=1,
-                                     maxValue=50, style=wx.SL_LABELS)
+        self.tour_len = wx.Slider(props_box, value=3, minValue=3,
+                                     maxValue=100, style=wx.SL_LABELS)
         props_sizer.Add(self.tour_len, (5, 0), (1, 1),
                         wx.EXPAND | borders('l'), 10)
 
@@ -341,6 +341,9 @@ class SolverControls(wx.Panel):
             self.runner.stop()
             # Set state to not running
             self._set_running(False)
+            #self._on_solver_state_reset()
+
+
 
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
@@ -471,7 +474,8 @@ class SolverControls(wx.Panel):
             self.reset_button.Disable()
         else:
             # Wait for the runner to actually stop
-            self.runner.join()
+            self.runner.stop()
+            self._on_reset(None)
             # Unset running flag, change button text, enable reset button
             self.running = False
             self.solve_button.SetLabel(self.SOLVE_BTN_INACTIVE)
@@ -495,10 +499,10 @@ class TSPView(wx.Panel):
         n_cities = self.Parent.Parent.controls.dset[CITIES]
         seen = set()
         def get_coord():
-            coord = (np.random.randint(30, 701), np.random.randint(30, 701))
+            coord = (np.random.randint(30, 701), np.random.randint(30, 490))
             # coord = (np.random.randint(0, 501), np.random.randint(0, 501))
             while coord in seen:
-                coord = (np.random.randint(0, 501), np.random.randint(0, 501))
+                coord = (np.random.randint(0, 501), np.random.randint(0, 490))
             seen.add(coord)
             return coord
 
