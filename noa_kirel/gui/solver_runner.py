@@ -49,7 +49,7 @@ class SolverRunner(threading.Thread):
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
 
     def run(self):
-        """Creates a process which runs the solver.
+        """Creates a process wich runs the solver.
         """
 
         # Start solver process
@@ -58,7 +58,8 @@ class SolverRunner(threading.Thread):
         self.solver_process.daemon = True
         self.solver_process.start()
 
-        # Mesage can be sent after this interval from sending the previous one
+        # Message can be sent after this interval from sending the previous
+        # one
         message_interval = 1 / self.message_limit
         # Timestamp after which next message can be sent
         next_message_time = time.time()
