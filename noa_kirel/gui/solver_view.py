@@ -474,8 +474,8 @@ class SolverControls(wx.Panel):
             self.reset_button.Disable()
         else:
             # Wait for the runner to actually stop
-            self.runner.stop()
-            self._on_reset(None)
+            # self.runner.stop()
+            # self._on_reset(None)
             # Unset running flag, change button text, enable reset button
             self.running = False
             self.solve_button.SetLabel(self.SOLVE_BTN_INACTIVE)
