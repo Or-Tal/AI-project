@@ -263,8 +263,10 @@ SOFTWARE.'''
         """Handles end of solving and stores reference to the results for
         future exporting.
         """
-
         self._results = results
+        self.solver_view.controls.result.SetLabel(str(
+            self.solver_view.controls.best_score))
+
 
     def _on_solver_state_reset(self):
         """Handles SOLVER_STATE_RESET message.

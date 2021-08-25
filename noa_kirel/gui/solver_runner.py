@@ -58,12 +58,14 @@ class SolverRunner(threading.Thread):
         self.solver_process.daemon = True
         self.solver_process.start()
 
-        # Mesage can be sent after this interval from sending the previous one
+        # Message can be sent after this interval from sending the previous
+        # one
         message_interval = 1 / self.message_limit
         # Timestamp after which next message can be sent
         next_message_time = time.time()
 
         # Start reading SolverState objects from the queue
+
         while not self._stop_event.is_set():
             state = self._queue.get()
             self.results.append(state)
@@ -77,6 +79,7 @@ class SolverRunner(threading.Thread):
 
             # Break out of the loop if it's the final state
             if state[-1] == 1:
+
                 break
 
             # Sleep specified amount of itme
