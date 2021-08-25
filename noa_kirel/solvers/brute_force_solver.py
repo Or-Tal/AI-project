@@ -40,7 +40,7 @@ class BruteForceSolver(Solver):
         start_time = time()
         best_score = np.NINF
         best_sol = None
-        counter = 1
+        counter = 0
         for sol in product(self.cities, repeat=self.n):
             sol = np.array(sol)
             tmp_score = self.score(sol)
@@ -49,7 +49,7 @@ class BruteForceSolver(Solver):
                 best_score = tmp_score
             counter = counter + 1
             yield sol, tmp_score, time() - start_time, best_sol, \
-                  best_score, counter / self.n
+                  best_score,  counter/len(self.cities) ** self.n
 
         return best_sol, best_score, time() - start_time, best_sol, best_score, 1
 
