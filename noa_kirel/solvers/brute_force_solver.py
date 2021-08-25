@@ -47,7 +47,9 @@ class BruteForceSolver(Solver):
             if tmp_score > best_score:
                 best_sol = sol
                 best_score = tmp_score
-            yield sol, tmp_score, time() - start_time, best_sol, best_score, counter / self.n
+            counter = counter + 1
+            yield sol, tmp_score, time() - start_time, best_sol, \
+                  best_score, counter / self.n
 
         return best_sol, best_score, time() - start_time, best_sol, best_score, 1
 

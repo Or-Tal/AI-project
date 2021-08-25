@@ -49,7 +49,7 @@ class SolverRunner(threading.Thread):
         pub.subscribe(self._on_solver_state_reset, 'SOLVER_STATE_RESET')
 
     def run(self):
-        """Creates a process wich runs the solver.
+        """Creates a process which runs the solver.
         """
 
         # Start solver process
@@ -65,6 +65,7 @@ class SolverRunner(threading.Thread):
         next_message_time = time.time()
 
         # Start reading SolverState objects from the queue
+
         while not self._stop_event.is_set():
             state = self._queue.get()
             self.results.append(state)
@@ -78,6 +79,7 @@ class SolverRunner(threading.Thread):
 
             # Break out of the loop if it's the final state
             if state[-1] == 1:
+
                 break
 
             # Sleep specified amount of itme

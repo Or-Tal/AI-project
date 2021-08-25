@@ -197,6 +197,7 @@ class SolverControls(wx.Panel):
         result_panel.SetSizer(result_sizer)
         res_box_sizer.Add(result_panel, 1)
 
+
         # #Error
         # error_label = wx.StaticText(result_panel, label='Error:')
         # result_sizer.Add(error_label, (1, 0), (0, 1),
@@ -317,20 +318,17 @@ class SolverControls(wx.Panel):
                               | wx.OK)
                 return
 
-        if self.cur_solver == GREEDY or self.cur_solver == BF_SOL:
-            num_of_days = self.params[self.cur_solver][TOUR_LEN]
-            num_of_cities = self.dset[CITIES]
-            if num_of_days > num_of_cities:
-                wx.MessageBox('Tour length is too long', 'Error',
-                              wx.ICON_ERROR | wx.OK)
-                return
+        num_of_days = self.params[self.cur_solver][TOUR_LEN]
+        num_of_cities = self.dset[CITIES]
+        if num_of_days > num_of_cities:
+            wx.MessageBox('Tour length is too long', 'Error',
+                          wx.ICON_ERROR | wx.OK)
+            return
 
         if not self.running:
 
             # Create and start the solver runner
             self.runner = SolverRunner(self.get_cur_solver())
-
-            # TODO check that delay slider is connected
             self.runner.delay = self.delay.GetValue() / 1000
             self.runner.daemon = True
             self.runner.start()
@@ -341,9 +339,8 @@ class SolverControls(wx.Panel):
             self.runner.stop()
             # Set state to not running
             self._set_running(False)
+
             #self._on_solver_state_reset()
-
-
 
     def _on_reset(self, event):
         """Handles clicking 'reset' button - sends reset message.
@@ -351,6 +348,7 @@ class SolverControls(wx.Panel):
         self.Parent.tsp_view.gen_coords()
         pub.sendMessage('SOLVER_STATE_CHANGE', state=None)
         pub.sendMessage('SOLVER_STATE_RESET')
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_delay_set(self, event):
         """Handles setting 'delay' slider - if there is an active runner its
@@ -361,6 +359,7 @@ class SolverControls(wx.Panel):
             return
 
         self.runner.delay = self.delay.GetValue() / 1000
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_mutation_rate_set(self, event):
         """Handles setting 'mutation_rate' slider
@@ -369,6 +368,7 @@ class SolverControls(wx.Panel):
         self.params[self.cur_solver][MUT_RATE] = val
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
                                       self.cur_solver])
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_population_size_set(self, event):
         """Handles setting 'population_size' slider
@@ -377,6 +377,7 @@ class SolverControls(wx.Panel):
         self.params[self.cur_solver][POP_SIZE] = val
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
                                       self.cur_solver])
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_elite_size_set(self, event):
         """Handles setting 'elite_size' slider
@@ -385,6 +386,7 @@ class SolverControls(wx.Panel):
         self.params[self.cur_solver][NUM_ELITE] = val
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
                                       self.cur_solver])
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_generations_set(self, event):
         """Handles setting number of 'generations' slider
@@ -393,14 +395,18 @@ class SolverControls(wx.Panel):
         self.params[self.cur_solver][STEPS] = val
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
                                       self.cur_solver])
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_tour_len_set(self, event):
         """Handles setting 'tour len' slider
         """
         val = event.EventObject.Value
-        self.params[self.cur_solver][TOUR_LEN] = val
+        for solvers in self.params.values():
+            solvers[TOUR_LEN] = val
+        # self.params[self.cur_solver][TOUR_LEN] = val
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[
                                       self.cur_solver])
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_view_change(self, event):
         """Handles checking or unchecking one of view option checkboxes.
@@ -411,17 +417,17 @@ class SolverControls(wx.Panel):
     def _on_number_of_cities_change(self, num_of_cities):
         """Handles solver change event.
         """
-
         self.num_of_cities = num_of_cities
         self.dset = load_dset_vis(f"datasets/{num_of_cities}_cities.npy")
         self.solver = self.get_cur_solver()
         self._on_reset(None)
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_solver_change(self, solver):
         """Handles solver change event.
         """
-
         self.solver = solver
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_tsp_change(self, tsp):
         """Handles TSP change event.
@@ -453,13 +459,14 @@ class SolverControls(wx.Panel):
         if state[-1] == 1:
             # Set state to not running
             self._set_running(False)
+        self.result.SetLabel(self.DEFAULT_RESULT)
 
     def _on_solver_state_reset(self):
         """Handles solver state reset message - clears result, error and
         progress controls.
         """
-
         self.result.SetLabel(self.DEFAULT_RESULT)
+        #self.result.SetLabel(str(self.best_score))
         #self.error.SetLabel(self.DEFAULT_RESULT)
         self.progress.SetValue(0)
 
@@ -479,6 +486,7 @@ class SolverControls(wx.Panel):
             # Unset running flag, change button text, enable reset button
             self.running = False
             self.solve_button.SetLabel(self.SOLVE_BTN_INACTIVE)
+            self.result.SetLabel(str(self.best_score))
             self.reset_button.Enable()
 
 

@@ -9,10 +9,8 @@ class SolverStats(wx.Panel):
 
     def __init__(self, parent):
         super(SolverStats, self).__init__(parent)
-
         # Solver states to plot
         self.results = []
-
         self._init_ui()
         self.parent = parent
 
