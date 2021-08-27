@@ -1,0 +1,6 @@
+wxpython
+pypubsub
+numpy
+pandas
+scipy
+PyInstaller

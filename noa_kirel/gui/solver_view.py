@@ -87,7 +87,7 @@ class SolverControls(wx.Panel):
         self.num_of_cities = NUM_OF_CITIES
 
         # Currently selected solver and tsp
-        self.dset = load_dset_vis("./datasets/3_cities.npy")
+        self.dset = load_dset_vis("./noa_kirel/datasets/3_cities.npy")
 
         self.params = {BF_SOL: {TOUR_LEN: 3},
                        GREEDY: {TOUR_LEN: 3},
@@ -296,7 +296,7 @@ class SolverControls(wx.Panel):
     def _on_select_number_cities(self, event):
         """Handles selecting num of cities from cities combobox.
         """
-        self.dset = load_dset_vis(f"./datasets/{event.String}_cities.npy")
+        self.dset = load_dset_vis(f"./noa_kirel/datasets/{event.String}_cities.npy")
         self.solver = self.get_solver(self.cur_solver, self.dset, self.params[self.cur_solver])
         pub.sendMessage('NUM_OF_CITIES_CHANGE', num_of_cities=self.dset[CITIES])
 
@@ -418,7 +418,7 @@ class SolverControls(wx.Panel):
         """Handles solver change event.
         """
         self.num_of_cities = num_of_cities
-        self.dset = load_dset_vis(f"datasets/{num_of_cities}_cities.npy")
+        self.dset = load_dset_vis(f"./noa_kirel/datasets/{num_of_cities}_cities.npy")
         self.solver = self.get_cur_solver()
         self._on_reset(None)
         self.result.SetLabel(self.DEFAULT_RESULT)
@@ -507,10 +507,11 @@ class TSPView(wx.Panel):
         n_cities = self.Parent.Parent.controls.dset[CITIES]
         seen = set()
         def get_coord():
-            coord = (np.random.randint(30, 701), np.random.randint(30, 490))
+            coord = (np.random.randint(30, 731), np.random.randint(30, 731))
             # coord = (np.random.randint(0, 501), np.random.randint(0, 501))
             while coord in seen:
-                coord = (np.random.randint(0, 501), np.random.randint(0, 490))
+                coord = (np.random.randint(30, 731), np.random.randint(30, 731))
+                # coord = (np.random.randint(0, 501), np.random.randint(0, 490))
             seen.add(coord)
             return coord
 

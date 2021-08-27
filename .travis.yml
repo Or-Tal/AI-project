@@ -2,7 +2,7 @@ language: python
 cache: pip
 
 install:
-- pip install -r requirements-test.txt
+- pip install -r requirements.txt-test.txt
 
 script:
 - python -m unittest discover -s tests
@@ -48,8 +48,8 @@ jobs:
     language: python
     python: '3.7'
     install:
-    - pip install -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 -r requirements.txt
-    - pip install -r requirements-build.txt
+    - pip install -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 -r requirements.txt.txt
+    - pip install -r requirements.txt-build.txt
     script:
     - python -m build linux
     - mv dist/noa_kirel-linux dist/noa_kirel-${TRAVIS_TAG}-linux
@@ -72,8 +72,8 @@ jobs:
     - export PATH="/c/Python:/c/Python/Scripts:$PATH"
     - python -m pip install --upgrade pip wheel
     install:
-    - pip install -r requirements.txt
-    - pip install -r requirements-build.txt
+    - pip install -r requirements.txt.txt
+    - pip install -r requirements.txt-build.txt
     script:
     - python -m build windows
     - mv dist/noa_kirel-windows.exe dist/noa_kirel-${TRAVIS_TAG}-windows.exe
