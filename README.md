@@ -1,49 +1,35 @@
-# TSP Visual
-
-![Build status](https://travis-ci.org/bcyran/tsp-visual.svg?branch=master)
+# Million Dollar tour $
 
 ![Screenshot of TSP Visual](noa_kirel/screenshot.png)
 
 ## About
-TSP Visual is a program visualising the process of solving the travelling
-salesman problem. It can open most of the instances from
-[TSPLIB](http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/). It also comes
-with following solving algorithms implemented:
-* Greedy
-* Brute Force
-* Branch and Bound (depth first)
-* Simulated Annealing
-* Tabu Search
-* Genetic Algorithm
+GUI is based on TSP visual: https://github.com/bcyran/tsp-visual
+
+In this project we tried to come up with a solution for a complex minimax problem, 
+considering a TSP variant which tries to maximize revenues and minimize independent expenses.
+
+Implemented algorithms:
+- Genetic algorithm
+- Greedy search baseline
+- Brute force  - optimal (w.r.t score)
 
 ## Running
 
 ### Python
-If you have Python 3.7+ on your machine you can clone this repo, install
-requirements and run TSP Visual:
+instalation and running:
 ```
 pip install -r requirements.txt
-python -m tspvisual [file]
+python -m noa_kirel
 ```
 where `[file]` is an optional path to the `.tsp` file to open.
 
-### Executables
-You can also [download
-executables](https://github.com/bcyran/tsp-visual/releases) created using
-[PyInstaller](https://www.pyinstaller.org/) for Linux and Windows. Note that
-due to a (probably) bug in PyInstaller, Linux executable is huge at ~120MB. If
-you know how to fix this, let me know!
-
 ## Usage
-Using TSP Visual is pretty straightforward. First of all, you need to open
-desired TSP instance using *File* menu. You will see the instance name in the
-top part of the window and the cities drawn on the right. Note that not all
-instances have display data. If you'll try to open such instance, you will be
-informed. The program will still work, but you won't be able to see anything
-besides the numbers which kinda beats the point.
+Using TSP Visual is pretty straightforward, using drop-down menus will load a 
+pre-generated dataset from noa_kirel/datasets directory; same goes for solvers.
+Simply choose your desired solver and dataset, adjust the hyper parameters and hit 
+"Solve".
 
-With open TSP instance you can choose solver to use from the dropdown list on
-the left part of the UI. If it's some kind of heuristics, various parameters
-will be shown below, you can adjust those. And finally click *Solve* button.
-Best path found by the solver (red) and current working path (black) will
-appear on the instance visualisation.
+## General Info
+- Implemented solvers could be found under noa_kirel/solvers
+- Evaluate: run noa_kirel/evaluation.py and then noa_kirel/analyze_results.py; 
+  Note that this may take some time!
