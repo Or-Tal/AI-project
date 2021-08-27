@@ -21,7 +21,6 @@ instalation and running:
 pip install -r requirements.txt
 python -m noa_kirel
 ```
-where `[file]` is an optional path to the `.tsp` file to open.
 
 ## Usage
 Using TSP Visual is pretty straightforward, using drop-down menus will load a 
